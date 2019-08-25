@@ -14,33 +14,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     var _duration = new Duration(seconds: 5);
     return new Timer(_duration, _checkUserHistory);
   }
-  //Uses a Ticker Mixin for Animations
-  Animation<double> _animation;
-  AnimationController _animationController;
+
   @override
   void initState() {
     super.initState();
     startTime();
-
-    _animationController = AnimationController(
-        vsync: this,
-        duration: Duration(seconds:2)); //specify the duration for the animation & include `this` for the vsyc
-    _animation = Tween<double>(begin: 1.0, end: 1.5).animate(
-        _animationController); //use Tween animation here, to animate between the values of 1.0 & 2.5.
-
-    _animation.addListener(() {
-      //here, a listener that rebuilds our widget tree when animation.value chnages
-      setState(() {});
-    });
-
-    _animation.addStatusListener((status) {
-      //AnimationStatus gives the current status of our animation, we want to go back to its previous state after completing its animation
-      if (status == AnimationStatus.completed) {
-        _animationController
-            .reverse(); //reverse the animation back here if its completed
-      }
-    });
-    _animationController.forward();
   }
   void _checkUserHistory() async {
     Repository repository=Repository();
@@ -74,14 +52,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           crossAxisAlignment:CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Image.asset('logo.png',height: 100* _animation.value,),
-            new Text("BoutiquePlex",style: TextStyle(fontWeight: FontWeight.bold,
+            new Image.asset('assets/logo.png',height: 100),
+            new Text("Chitrgupta",style: TextStyle(fontWeight: FontWeight.bold,
                 fontSize: 20.0,
-                color:Colors.pink ),
+                color:Colors.blue ),
             ),
             Container(
               child: new CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.pink),
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
               margin: EdgeInsets.only(top: 50),
             ),
