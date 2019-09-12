@@ -11,24 +11,25 @@ class Background extends StatelessWidget {
           new Stack(
             alignment: Alignment.bottomCenter,
             children: <Widget>[
+
+              WavyHeader(),
               Column(
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
                       Image.asset('assets/logo.png', width: MediaQuery.of(context).size.width/2.2,),
                       Positioned(
-                          child: Text("Login",
-                            style: TextStyle(fontWeight: FontWeight.bold,fontSize:20,color: Colors.black,),
-                          ),
-                          top: 50,
-                          left: 50,
+                        child: Text("Login",
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize:20,color: Colors.black,),
+                        ),
+                        top: 50,
+                        left: 50,
                       ),
                     ],
                   ),
                   Text("Chitragupta",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: Colors.blue),)
                 ],
               ),
-              WavyHeader(),
             ],
           ),
           Expanded(
