@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Image.asset('assets/logo.png',height: 100),
-            new Text("Chitrgupta",style: TextStyle(fontWeight: FontWeight.bold,
+            new Text("Chitragupta",style: TextStyle(fontWeight: FontWeight.bold,
                 fontSize: 20.0,
                 color:Colors.blue ),
             ),

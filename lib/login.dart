@@ -30,7 +30,7 @@ class Login extends StatelessWidget {
       children: <Widget>[
         Padding(
           padding:
-          EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.3),
+          EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.5),
         ),
         Column(
           children: <Widget>[
@@ -40,29 +40,62 @@ class Login extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 40, bottom: 10),
-                  child: Text(
-                    "Email",
-                    style: TextStyle(fontSize: 16, color: Color(0xFF999A9A)),
-                  ),
                 ),
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: <Widget>[
-                    InputWidget(30.0, 0.0),
+                    InputWidget(30.0, 0.0,"Email"),
+//                    Padding(
+//                        padding: EdgeInsets.only(right: 50),
+//                        child: Row(
+//                          children: <Widget>[
+//                            Expanded(
+//                                child: Padding(
+//                                  padding: EdgeInsets.only(top: 40),
+//                                  child: Text(
+//                                    'Enter your email id to continue...',
+//                                    textAlign: TextAlign.end,
+//                                    style: TextStyle(color: Color(0xFFA0A0A0),
+//                                        fontSize: 12),
+//                                  ),
+//                                )),
+//
+//                          ],
+//                        ))
+                  ],
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+//                Padding(
+//                  padding: EdgeInsets.only(left: 40, bottom: 10),
+//                  child: Text(
+//                    "Email",
+//                    style: TextStyle(fontSize: 16, color: Color(0xFF999A9A)),
+//                  ),
+//                ),
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: <Widget>[
+                    InputWidget(30.0, 0.0,"Password"),
                     Padding(
                         padding: EdgeInsets.only(right: 50),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-                            Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 40),
-                                  child: Text(
-                                    'Enter your email id to continue...',
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(color: Color(0xFFA0A0A0),
-                                        fontSize: 12),
-                                  ),
-                                )),
+//                            Expanded(
+//                                child: Padding(
+//                                  padding: EdgeInsets.only(top: 40),
+//                                  child: Text(
+//                                    'Enter your email id to continue...',
+//                                    textAlign: TextAlign.end,
+//                                    style: TextStyle(color: Color(0xFFA0A0A0),
+//                                        fontSize: 12),
+//                                  ),
+//                                )
+//                            ),
                             Container(
                               padding: EdgeInsets.all(10),
                               decoration: ShapeDecoration(
@@ -85,9 +118,11 @@ class Login extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: 50),
+              padding: EdgeInsets.only(bottom: 30),
             ),
-            roundedRectButton("Let's get Started", signInGradients, false),
+            Text("New user?"),
+            Padding(padding: EdgeInsets.all(2),),
+            //roundedRectButton("Let's get Started", signInGradients, false),
             roundedRectButton("Create an Account", signUpGradients, false),
           ],
         )

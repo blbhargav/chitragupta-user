@@ -13,8 +13,19 @@ class Background extends StatelessWidget {
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  Image.asset('assets/logo.png', width: MediaQuery.of(context).size.width/2.2,),
-                  Text("Chitraguptha",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: Colors.blue),)
+                  Stack(
+                    children: <Widget>[
+                      Image.asset('assets/logo.png', width: MediaQuery.of(context).size.width/2.2,),
+                      Positioned(
+                          child: Text("Login",
+                            style: TextStyle(fontWeight: FontWeight.bold,fontSize:20,color: Colors.black,),
+                          ),
+                          top: 50,
+                          left: 50,
+                      ),
+                    ],
+                  ),
+                  Text("Chitragupta",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: Colors.blue),)
                 ],
               ),
               WavyHeader(),
