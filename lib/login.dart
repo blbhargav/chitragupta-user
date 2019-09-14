@@ -1,5 +1,6 @@
 import 'package:chitragupta/background.dart';
 import 'package:chitragupta/inputWidget.dart';
+import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 
 class loginRoot extends StatefulWidget {
@@ -23,7 +24,17 @@ class _loginRootState extends State<loginRoot>with TickerProviderStateMixin{
   }
 
 }
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  TextEditingController _userIdController=TextEditingController();
+  TextEditingController _passwordController=TextEditingController();
+  @override
+  _Login createState() => _Login(_userIdController,_passwordController);
+}
+
+class _Login extends State<Login>{
+  TextEditingController _userIdController,_passwordController;
+
+  _Login(this._userIdController, this._passwordController);
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,24 +55,7 @@ class Login extends StatelessWidget {
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: <Widget>[
-                    InputWidget(30.0, 0.0,"Email"),
-//                    Padding(
-//                        padding: EdgeInsets.only(right: 50),
-//                        child: Row(
-//                          children: <Widget>[
-//                            Expanded(
-//                                child: Padding(
-//                                  padding: EdgeInsets.only(top: 40),
-//                                  child: Text(
-//                                    'Enter your email id to continue...',
-//                                    textAlign: TextAlign.end,
-//                                    style: TextStyle(color: Color(0xFFA0A0A0),
-//                                        fontSize: 12),
-//                                  ),
-//                                )),
-//
-//                          ],
-//                        ))
+                    InputWidget(30.0, 0.0,"Email",_userIdController),
                   ],
                 ),
               ],
@@ -69,48 +63,42 @@ class Login extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-//                Padding(
-//                  padding: EdgeInsets.only(left: 40, bottom: 10),
-//                  child: Text(
-//                    "Email",
-//                    style: TextStyle(fontSize: 16, color: Color(0xFF999A9A)),
-//                  ),
-//                ),
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: <Widget>[
-                    InputWidget(30.0, 0.0,"Password"),
+                    InputWidgetPassword(30.0, 0.0,"Password",_passwordController),
                     Padding(
                         padding: EdgeInsets.only(right: 50),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-//                            Expanded(
-//                                child: Padding(
-//                                  padding: EdgeInsets.only(top: 40),
-//                                  child: Text(
-//                                    'Enter your email id to continue...',
-//                                    textAlign: TextAlign.end,
-//                                    style: TextStyle(color: Color(0xFFA0A0A0),
-//                                        fontSize: 12),
-//                                  ),
-//                                )
-//                            ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: ShapeDecoration(
-                                shape: CircleBorder(),
-                                gradient: LinearGradient(
-                                    colors: signInGradients,
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight),
+                            GestureDetector(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: ShapeDecoration(
+                                  shape: CircleBorder(),
+                                  gradient: LinearGradient(
+                                      colors: signInGradients,
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight),
+                                ),
+                                child: ImageIcon(
+                                  AssetImage("assets/ic_forward.png"),
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
                               ),
-                              child: ImageIcon(
-                                AssetImage("assets/ic_forward.png"),
-                                size: 40,
-                                color: Colors.white,
-                              ),
-                            ),
+                              onTap: (){
+                                Repository repository=new Repository();
+                                repository.signInWithCredentials(_userIdController.text, _passwordController.text)
+                                  .then((res){
+                                      print("BLB $res");
+                                  })
+                                  .catchError((e){
+                                  print("BLB $res");
+                                });
+                              },
+                            )
                           ],
                         ))
                   ],
