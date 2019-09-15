@@ -1,3 +1,5 @@
+import 'dart:core';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,24 +13,20 @@ class Repository {
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         fbDBRef=fbDBRef ?? FirebaseDatabase.instance.reference();
 
-  Future<void> signInWithCredentials(String email, String password) {
+  Future signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
       email: email,
-      password: password,
-    );
+      password: password);
   }
 
-  Future<void> signUp({String loginId, String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
+  Future signUp(String loginId, String password) {
+    return  _firebaseAuth.createUserWithEmailAndPassword(
       email: loginId,
       password: password,
     );
   }
-  Future<void> signUpWithEmail(String loginId, String password) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-      email: loginId,
-      password: password,
-    );
+  Future sendResetLink(String email){
+    return _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   Future<void> signOut() async {
