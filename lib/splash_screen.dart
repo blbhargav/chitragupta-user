@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => dashBoardScreen()
+              builder: (context) => homeScreen()
           ),
           ModalRoute.withName("/Home")
       );

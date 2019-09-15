@@ -7,8 +7,11 @@ class dashBoardScreen extends StatefulWidget {
 class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold();
+    return Scaffold(
+      body: Center(
+        child: Text("Dashboard"),
+      ),
+    );
   }
 
 }

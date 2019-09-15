@@ -1,4 +1,5 @@
 import 'package:chitragupta/app/dashboard.dart';
+import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/background.dart';
 import 'package:chitragupta/inputWidget.dart';
 import 'package:chitragupta/progress.dart';
@@ -159,7 +160,7 @@ class _Login extends State<Login>{
           _loading=false;
         });
         repository.updateUserSignedLocally(true);
-        navigateToDashboard();
+        navigateToHome();
       })
       .catchError((e){
         print("BLB login $e");
@@ -225,7 +226,7 @@ class _Login extends State<Login>{
         setState(() {
           _loading=false;
         });
-        navigateToDashboard();
+        navigateToHome();
       })
           .catchError((e){
         print("BLB signup $e");
@@ -253,11 +254,11 @@ class _Login extends State<Login>{
 
   }
 
-  void navigateToDashboard() {
+  void navigateToHome() {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => dashBoardScreen()
+            builder: (context) => homeScreen()
         ),
         ModalRoute.withName("/Home")
     );
