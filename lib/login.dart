@@ -10,43 +10,42 @@ class loginRoot extends StatefulWidget {
   @override
   _loginRootState createState() => _loginRootState();
 }
-class _loginRootState extends State<loginRoot>with TickerProviderStateMixin{
+
+class _loginRootState extends State<loginRoot> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       resizeToAvoidBottomPadding: false,
+      //resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-        body: Stack(
-          children: <Widget>[
-            Background(),
-            Login(),
-          ],
-        ),
+      body: Stack(
+        children: <Widget>[Background(), Login()],
+      ),
     );
   }
-
 }
+
 class Login extends StatefulWidget {
-  TextEditingController _userIdController=TextEditingController();
-  TextEditingController _passwordController=TextEditingController();
+  TextEditingController _userIdController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   @override
-  _Login createState() => _Login(_userIdController,_passwordController);
+  _Login createState() => _Login(_userIdController, _passwordController);
 }
 
-class _Login extends State<Login>{
-  TextEditingController _userIdController,_passwordController;
+class _Login extends State<Login> {
+  TextEditingController _userIdController, _passwordController;
   String error;
-  bool _loading=false;
+  bool _loading = false;
   _Login(this._userIdController, this._passwordController);
   @override
   Widget build(BuildContext context) {
     return ProgressHUD(
-      child: Column(
+      child: ListView(
         children: <Widget>[
           Padding(
             padding:
-            EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.5),
+                EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
           ),
           Column(
             children: <Widget>[
@@ -60,20 +59,28 @@ class _Login extends State<Login>{
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: <Widget>[
-                      InputWidget(30.0, 0.0,"Email",_userIdController),
+                      InputWidget(30.0, 0.0, "Email", _userIdController),
                     ],
                   ),
                 ],
               ),
-              error!=null?Padding(child: Text(error,style: TextStyle(color: Colors.red),),padding: EdgeInsets.only(bottom: 5),)
-                  :Container(),
+              error != null
+                  ? Padding(
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      padding: EdgeInsets.only(bottom: 5),
+                    )
+                  : Container(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: <Widget>[
-                      InputWidgetPassword(30.0, 0.0,"Password",_passwordController),
+                      InputWidgetPassword(
+                          30.0, 0.0, "Password", _passwordController),
                       Padding(
                           padding: EdgeInsets.only(right: 50),
                           child: Row(
@@ -95,7 +102,7 @@ class _Login extends State<Login>{
                                     color: Colors.white,
                                   ),
                                 ),
-                                onTap: (){
+                                onTap: () {
                                   loginFunction();
                                 },
                               )
@@ -106,24 +113,43 @@ class _Login extends State<Login>{
                 ],
               ),
               GestureDetector(
-                child: Text("Forgot password?",
-                  style: TextStyle(color: Colors.lightBlueAccent,fontStyle: FontStyle.italic,decoration: TextDecoration.underline),),
-                  onTap: (){
-                      showForgotAlert(context);
-                  },
+                child: Text(
+                  "Forgot password?",
+                  style: TextStyle(
+                      color: Colors.lightBlueAccent,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 15,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.blue),
+                ),
+                onTap: () {
+                  showForgotAlert(context);
+                },
               ),
               Padding(
-                padding: EdgeInsets.only(bottom: 30),
+                padding: EdgeInsets.only(bottom: 20),
               ),
-              Text("New user?"),
-              Padding(padding: EdgeInsets.all(2),),
+              Text(
+                "New user?",
+                style: TextStyle(decoration: TextDecoration.none, fontSize: 14),
+              ),
+              Padding(
+                padding: EdgeInsets.all(2),
+              ),
               //roundedRectButton("Let's get Started", signInGradients, false),
               GestureDetector(
-                child: roundedRectButton("Create an Account", signUpGradients, false),
-                onTap: (){
+                child: roundedRectButton(
+                  "Create an Account",
+                  signUpGradients,
+                  false,
+                ),
+                onTap: () {
                   signUp();
                 },
               ),
+              Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom)),
             ],
           )
         ],
@@ -135,59 +161,58 @@ class _Login extends State<Login>{
 
   void loginFunction() {
     setState(() {
-      error=null;
+      error = null;
     });
-    if(_userIdController.text.isEmpty){
+    if (_userIdController.text.isEmpty) {
       setState(() {
-        error="Please enter email Id";
+        error = "Please enter email Id";
       });
-    }else if(_passwordController.text.isEmpty){
+    } else if (_passwordController.text.isEmpty) {
       setState(() {
-        error="Please enter password";
+        error = "Please enter password";
       });
-    }else if(_passwordController.text.length<6){
+    } else if (_passwordController.text.length < 6) {
       setState(() {
-        error="Password must be at least 6 characters";
+        error = "Password must be at least 6 characters";
       });
-    }else{
-      Repository repository=new Repository();
+    } else {
+      Repository repository = new Repository();
       setState(() {
-        _loading=true;
+        _loading = true;
       });
-      repository.signInWithCredentials(_userIdController.text, _passwordController.text)
-          .then((res){
+      repository
+          .signInWithCredentials(
+              _userIdController.text, _passwordController.text)
+          .then((res) {
         setState(() {
-          _loading=false;
+          _loading = false;
         });
         repository.updateUserSignedLocally(true);
         navigateToHome();
-      })
-      .catchError((e){
+      }).catchError((e) {
         print("BLB login $e");
         setState(() {
-          _loading=false;
+          _loading = false;
         });
-        if(e.toString().toLowerCase().contains("user_not_found")){
+        if (e.toString().toLowerCase().contains("user_not_found")) {
           setState(() {
-            error="Email Id not registerted";
+            error = "Email Id not registerted";
           });
-        }else if(e.toString().toLowerCase().contains("invalid_email")){
+        } else if (e.toString().toLowerCase().contains("invalid_email")) {
           setState(() {
-            error="Invalid email Id";
+            error = "Invalid email Id";
           });
-        }else if(e.toString().toLowerCase().contains("wrong_password")){
+        } else if (e.toString().toLowerCase().contains("wrong_password")) {
           setState(() {
-            error="Wrong password";
+            error = "Wrong password";
           });
-        }else{
+        } else {
           setState(() {
-            error="Something went wrong. Please try again later.";
+            error = "Something went wrong. Please try again later.";
           });
         }
-
       });
     }
-
   }
 
   @override
@@ -200,106 +225,108 @@ class _Login extends State<Login>{
 
   void signUp() {
     setState(() {
-      error=null;
+      error = null;
     });
-    if(_userIdController.text.isEmpty){
+    if (_userIdController.text.isEmpty) {
       setState(() {
-        error="Please enter email Id";
+        error = "Please enter email Id";
       });
-    }else if(_passwordController.text.isEmpty){
+    } else if (_passwordController.text.isEmpty) {
       setState(() {
-        error="Please enter password";
+        error = "Please enter password";
       });
-    }else if(_passwordController.text.length<6){
+    } else if (_passwordController.text.length < 6) {
       setState(() {
-        error="Password must be at least 6 characters";
+        error = "Password must be at least 6 characters";
       });
-    }else{
-      Repository repository=new Repository();
+    } else {
+      Repository repository = new Repository();
       setState(() {
-        _loading=true;
+        _loading = true;
       });
-      repository.signUp(_userIdController.text, _passwordController.text)
-          .then((res){
+      repository
+          .signUp(_userIdController.text, _passwordController.text)
+          .then((res) {
         print("BLB $res");
         repository.updateUserSignedLocally(true);
         setState(() {
-          _loading=false;
+          _loading = false;
         });
         navigateToHome();
-      })
-          .catchError((e){
+      }).catchError((e) {
         print("BLB signup $e");
         setState(() {
-          _loading=false;
+          _loading = false;
         });
-        if(e.toString().toLowerCase().contains("already")){
+        if (e.toString().toLowerCase().contains("already")) {
           setState(() {
-            error="Email already registered";
+            error = "Email already registered";
           });
-        }else if(e.toString().toLowerCase().contains("invalid_email")){
+        } else if (e.toString().toLowerCase().contains("invalid_email")) {
           setState(() {
-            error="Invalid email Id";
+            error = "Invalid email Id";
           });
-        }else{
+        } else {
           setState(() {
-            error="Something went wrong. Please try again later.";
+            error = "Something went wrong. Please try again later.";
           });
         }
-
       });
-
     }
-
-
   }
 
   void navigateToHome() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => homeScreen()
-        ),
-        ModalRoute.withName("/Home")
-    );
+        MaterialPageRoute(builder: (context) => homeScreen()),
+        ModalRoute.withName("/Home"));
   }
 
   void showForgotAlert(BuildContext context) {
-    TextEditingController controller=TextEditingController();
+    TextEditingController controller = TextEditingController();
     String forgotError;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return StatefulBuilder(
-          builder: (context,setState){
+          builder: (context, setState) {
             return AlertDialog(
               title: new Text("Forgot Password?"),
               content: Container(
                 height: 150,
                 child: Column(
                   children: <Widget>[
-                    new Text("No worries! Reset your password to access the app."),
+                    new Text(
+                        "No worries! Reset your password to access the app."),
                     TextField(
                       decoration: InputDecoration(
-                        //border: InputBorder.none,
+                          //border: InputBorder.none,
                           hintText: "",
-                          hintStyle: TextStyle(color: Color(0xFFE1E1E1), fontSize: 14),
+                          hintStyle:
+                              TextStyle(color: Color(0xFFE1E1E1), fontSize: 14),
                           alignLabelWithHint: true,
                           labelText: "Email",
-                          errorText: forgotError
-                      ),
+                          errorText: forgotError),
                       controller: controller,
                     ),
-                    Padding(padding: EdgeInsets.only(bottom: 5),),
-                    Text("We will send reset link to this email",style: TextStyle(fontSize: 12),)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 5),
+                    ),
+                    Text(
+                      "We will send reset link to this email",
+                      style: TextStyle(fontSize: 12),
+                    )
                   ],
                 ),
               ),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
-                  child: new Text("Cancel",style: TextStyle(color: Colors.red),),
+                  child: new Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.red),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -307,22 +334,23 @@ class _Login extends State<Login>{
                 new FlatButton(
                   child: new Text("Send Link"),
                   onPressed: () {
-                    if(controller.text.isEmpty){
+                    if (controller.text.isEmpty) {
                       setState(() {
-                        forgotError="Please enter email id";
+                        forgotError = "Please enter email id";
                       });
-                    }else{
-                      bool emailValid = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(controller.text);
-                      if(emailValid){
+                    } else {
+                      bool emailValid =
+                          RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(controller.text);
+                      if (emailValid) {
                         Navigator.of(context).pop();
                         sendResetLink(controller.text);
-                      }else{
+                      } else {
                         setState(() {
-                          forgotError="Please enter valid email id";
+                          forgotError = "Please enter valid email id";
                         });
                       }
                     }
-
                   },
                 ),
               ],
@@ -332,7 +360,8 @@ class _Login extends State<Login>{
       },
     );
   }
-  void showDialogFunction(BuildContext context,String title,String message) {
+
+  void showDialogFunction(BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -355,29 +384,32 @@ class _Login extends State<Login>{
   }
 
   void sendResetLink(String email) {
-    Repository repository=new Repository();
+    Repository repository = new Repository();
     setState(() {
-      _loading=true;
+      _loading = true;
     });
-    repository.sendResetLink(email).then((res){
+    repository.sendResetLink(email).then((res) {
       setState(() {
-        _loading=false;
+        _loading = false;
       });
-      showDialogFunction(context,
-          "Reset email sent", "Password reset email sent to $email. Please check your inbox and reset.\nIncase if you don't find email check your spam box too.");
-    }).catchError((e){
+      showDialogFunction(context, "Reset email sent",
+          "Password reset email sent to $email. Please check your inbox and reset.\nIncase if you don't find email check your spam box too.");
+    }).catchError((e) {
       setState(() {
-        _loading=false;
+        _loading = false;
       });
       print("BLB $e");
-      if(e.toString().toLowerCase().contains("user_not_found")){
-        showDialogFunction(context, "Error", "User not found for this email id: $email");
-      }else{
-        showDialogFunction(context, "Error", "Something went wrong. Please try again later.");
+      if (e.toString().toLowerCase().contains("user_not_found")) {
+        showDialogFunction(
+            context, "Error", "User not found for this email id: $email");
+      } else {
+        showDialogFunction(
+            context, "Error", "Something went wrong. Please try again later.");
       }
     });
   }
 }
+
 Widget roundedRectButton(
     String title, List<Color> gradient, bool isEndIconVisible) {
   return Builder(builder: (BuildContext mContext) {
@@ -401,6 +433,7 @@ Widget roundedRectButton(
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
+                    decoration: TextDecoration.none,
                     fontWeight: FontWeight.w500)),
             padding: EdgeInsets.only(top: 16, bottom: 16),
           ),

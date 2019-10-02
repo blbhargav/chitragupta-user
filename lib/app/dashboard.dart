@@ -1,3 +1,4 @@
+import 'package:chitragupta/app/addTransaction.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -5,9 +6,11 @@ class dashBoardScreen extends StatefulWidget {
   @override
   _dashBoardScreenState createState() => _dashBoardScreenState();
 }
-class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderStateMixin{
-  String userName="Hi Bhargav";
-  String currency="₹";
+
+class _dashBoardScreenState extends State<dashBoardScreen>
+    with TickerProviderStateMixin {
+  String userName = "Hi Bhargav";
+  String currency = "₹";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,17 +30,27 @@ class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderSta
                 colors: [
                   // Colors are easy thanks to Flutter's Colors class.
                   Colors.lightBlue[900],
-                  Colors.lightBlue[700],
-                  Colors.lightBlue[500],
-                  Colors.lightBlue[300],
+                  Colors.lightBlue[900],
+                  Colors.lightBlue[900],
+                  Colors.lightBlue[900],
                 ],
               ),
             ),
             child: Column(
               children: <Widget>[
-                Padding(padding: EdgeInsets.only(top: 50),),
-                Text(userName,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 19),),
-                Padding(padding: EdgeInsets.all(15),),
+                Padding(
+                  padding: EdgeInsets.only(top: 50),
+                ),
+                Text(
+                  userName,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 19),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(15),
+                ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
@@ -46,9 +59,14 @@ class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderSta
                       child: Container(
                         child: Column(
                           children: <Widget>[
-                            Text("Yesterday"),
-                            Padding(padding: EdgeInsets.all(5),),
-                            Text("₹ 5"),
+                            Text(
+                              "Yesterday",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
+                            Text("₹ 5", style: TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -58,9 +76,19 @@ class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderSta
                       child: Container(
                         child: Column(
                           children: <Widget>[
-                            Text("Today",style: TextStyle(fontSize: 20),),
-                            Padding(padding: EdgeInsets.all(5),),
-                            Text("₹ 5000",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold)),
+                            Text(
+                              "Today",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
+                            Text("₹ 5000",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
                           ],
                         ),
                       ),
@@ -70,9 +98,12 @@ class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderSta
                       child: Container(
                         child: Column(
                           children: <Widget>[
-                            Text("Month"),
-                            Padding(padding: EdgeInsets.all(5),),
-                            Text("₹ 5"),
+                            Text("Month",
+                                style: TextStyle(color: Colors.white)),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
+                            Text("₹ 5", style: TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -86,13 +117,17 @@ class _dashBoardScreenState extends State<dashBoardScreen>with TickerProviderSta
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){addTransactionPage();},
+        onPressed: () {
+          addTransactionPage();
+        },
       ),
     );
   }
 
   void addTransactionPage() {
-
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddTransactionScreen()),
+    );
   }
-
 }

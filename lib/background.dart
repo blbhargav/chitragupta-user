@@ -9,32 +9,44 @@ class Background extends StatelessWidget {
       body: Column(
         children: <Widget>[
           new Stack(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.center,
             children: <Widget>[
-
               WavyHeader(),
               Column(
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
-                      Image.asset('assets/logo.png', width: MediaQuery.of(context).size.width/2.2,),
+                      Image.asset(
+                        'assets/logo.png',
+                        width: MediaQuery.of(context).size.width / 2.3,
+                      ),
                       Positioned(
-                        child: Text("Login",
-                          style: TextStyle(fontWeight: FontWeight.bold,fontSize:20,color: Colors.black,),
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
                         ),
                         top: 50,
                         left: 50,
                       ),
                     ],
                   ),
-                  Text("Chitragupta",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: Colors.blue),)
+                  Text(
+                    "Chitragupta",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.blue),
+                  )
                 ],
               ),
             ],
           ),
           Expanded(
-            child: Container(
-            ),
+            child: Container(),
           ),
           Stack(
             alignment: Alignment.bottomLeft,

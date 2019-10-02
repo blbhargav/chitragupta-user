@@ -1,6 +1,7 @@
 import 'package:chitragupta/app/dashboard.dart';
 import 'package:chitragupta/app/settings.dart';
 import 'package:chitragupta/app/spends.dart';
+import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 
 class homeScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _homeScreenState extends State<homeScreen>with TickerProviderStateMixin{
     Spends(),
     Settings()
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
