@@ -56,10 +56,8 @@ class Repository {
   }
 
   Future<String> getUserId() async{
-    print("BLB DB uid started");
     FirebaseUser user=await _firebaseAuth.currentUser();
     uid=user.uid;
-    print("BLB DB uid $uid");
     return user.uid;
   }
   Future addSpend(Spend spend) {
@@ -71,6 +69,26 @@ class Repository {
           .document(uid).collection(date).document()
           .setData(spend.toJson());
     });
+  }
+
+ Future<List<Map<dynamic, dynamic>>> getRecentSpends()  async{
+//    QuerySnapshot querySnapshot = await Firestore.instance.collection("Spends").document(Repository.uid).collection("10-2019").getDocuments();
+//    print("BLB ${querySnapshot.documentChanges}");
+//    var list = querySnapshot.documents;
+//    return list;
+   List<DocumentSnapshot> templist;
+   List<Map<dynamic, dynamic>> list = new List();
+    var path=Firestore.instance.collection("Spends").document(uid).collection("10-2019");
+
+    var collectionSnapshot=await path.getDocuments();
+    print("BLB collection ${collectionSnapshot}");
+   templist = collectionSnapshot.documents;
+   print("BLB templist ${templist.length}");
+   list = templist.map((DocumentSnapshot docSnapshot){
+     return docSnapshot.data;
+   }).toList();
+
+   return list;
   }
 
 

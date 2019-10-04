@@ -1,4 +1,6 @@
 import 'package:chitragupta/app/addTransaction.dart';
+import 'package:chitragupta/models.dart';
+import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +13,19 @@ class _dashBoardScreenState extends State<dashBoardScreen>
     with TickerProviderStateMixin {
   String userName = "Hi Bhargav";
   String currency = "₹";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Repository repository=new Repository();
+    repository.getUserId();
+    repository.getRecentSpends().then((res){
+      print("BLB result${res}");
+    }).catchError((e){
+      print("BLB error $e");
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
