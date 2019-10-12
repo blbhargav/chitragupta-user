@@ -1,25 +1,61 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 
-class Spend{
+class Spend {
   Spend();
-  String id,amount; String title; String category; DateTime date; String description;
+  int amount;
+  String key;
+  String title;
+  String category, date;
+  DateTime dateTime;
+  String description;
 
-  Spend.fromSnapshot(DocumentSnapshot snapshot)
-      : id = snapshot.documentID,
-        amount = snapshot['amount'],
-        category = snapshot['category'],
-        date = snapshot['date'],
-        title = snapshot['title'],
-        description = snapshot['description'];
+  Spend.fromSnapshot({String key, DataSnapshot snapshot})
+      : key = snapshot.key,
+        amount = snapshot.value['amount'],
+        category = snapshot.value['category'],
+        date = snapshot.value['date'],
+        dateTime =
+            DateTime.fromMillisecondsSinceEpoch(snapshot.value['dateTime']),
+        title = snapshot.value['title'],
+        description = snapshot.value['description'];
 
-  toJson(){
+  toJson() {
     return {
-      "amount":amount,
-      "category":category,
-      "date":date,
-      "description":description,
-      "title":title
-
+      "amount": amount,
+      "category": category,
+      "dateTime": dateTime.millisecondsSinceEpoch,
+      "date": date,
+      "description": description,
+      "title": title
     };
   }
+
+  Spend.fromJson(var json)
+      : amount = json['amount'],
+        category = json['category'],
+        dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
+        date = json['date'],
+        description = json['description'],
+        title = json['title'];
+
+  static fromSnapshotToList(DataSnapshot snapshot) {
+    List<Spend> spendList = [];
+    print(snapshot.key);
+    Map<dynamic, dynamic> spends = snapshot.value;
+    spends.forEach((key, value) {
+      Spend spend = Spend.fromJson(value);
+      spend.key = key;
+      spendList.add(spend);
+    });
+
+    return spendList;
+  }
+}
+
+class SpendsList {
+  List<Spend> spendList;
+  SpendsList({this.spendList});
+  SpendsList.fromSnapshot(DataSnapshot snapshot)
+      : spendList = Spend.fromSnapshotToList(snapshot);
 }

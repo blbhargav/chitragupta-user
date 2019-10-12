@@ -28,6 +28,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String amountErrorTV, titleErrorTV, categoryErrorTV;
   bool _laoding = false;
 
+  final globalKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -53,6 +54,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     return ProgressHUD(
         child: Scaffold(
           resizeToAvoidBottomPadding: false,
+          key: globalKey,
           appBar: AppBar(
             title: Text("Add Transaction"),
             backgroundColor: Colors.lightBlue[900],
@@ -181,7 +183,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       child: roundedRectButton("Save", saveGradient, false),
                     ),
                     onTap: () {
-                      validate();
+                      validate(context);
                     },
                   )
                 ],
@@ -259,12 +261,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  void validate() {
+  void validate(BuildContext context) {
     String amount = _amountController.text;
     String title = _spendController.text;
     String category = selectedCat;
-    String date = DateFormat('dd-MM-yyyy hh:mm a').format(dateTime);
+    String date = DateFormat('dd-MM-yyyy').format(dateTime);
     String description = _descriptionController.text;
+    //print("BLB ${DateTime.now().toIso8601String()}");
 
     setState(() {
       amountErrorTV = null;
@@ -286,13 +289,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       });
     } else {
       Spend spend = new Spend();
-      spend.amount = amount;
+      spend.amount = int.parse(amount);
       spend.category = category;
-      spend.date = dateTime;
+      spend.dateTime = dateTime;
+      spend.date = date;
       spend.title = title;
       spend.description = description;
 
-      saveInDB(spend);
+      saveInDB(context, spend);
     }
   }
 
@@ -306,15 +310,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _descriptionController.dispose();
   }
 
-  void saveInDB(Spend spend) {
-
+  void saveInDB(BuildContext context, Spend spend) {
     showProgress();
     repository.addSpend(spend).then((res) {
       hideProgress();
-      print("BLB success $res");
+      setState(() {
+        _amountController.clear();
+        _spendController.clear();
+        //_dateController.clear();
+        _descriptionController.clear();
+      });
+      final snackBar = SnackBar(
+        content: Text('Successfully Added'),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+      globalKey.currentState.showSnackBar(snackBar);
+
+      //Navigator.pop(context);
     }).catchError((err) {
       hideProgress();
-      print("BLB error $err");
+      final snackBar = SnackBar(
+        content: Text('Something went wrong. Please try after some time.'),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+      globalKey.currentState.showSnackBar(snackBar);
     });
   }
 

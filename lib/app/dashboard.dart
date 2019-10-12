@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chitragupta/app/addTransaction.dart';
 import 'package:chitragupta/models.dart';
 import 'package:chitragupta/repository.dart';
@@ -9,22 +11,25 @@ class dashBoardScreen extends StatefulWidget {
   _dashBoardScreenState createState() => _dashBoardScreenState();
 }
 
-class _dashBoardScreenState extends State<dashBoardScreen>
-    with TickerProviderStateMixin {
+class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderStateMixin {
   String userName = "Hi Bhargav";
   String currency = "₹";
-
+  StreamSubscription _subscriptionTodo;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Repository repository=new Repository();
-    repository.getUserId();
-    repository.getRecentSpends().then((res){
-      print("BLB result${res}");
-    }).catchError((e){
-      print("BLB error $e");
+    repository.getUserId().then((res){
+      repository.getRecentRecords(_updateRecentSpends)
+          .then((StreamSubscription s) => _subscriptionTodo = s);
     });
+
+
+
+  }
+  _updateRecentSpends(SpendsList spendsList) {
+   print("BLB dashboard ${spendsList.spendList.length}");
   }
   @override
   Widget build(BuildContext context) {
@@ -144,5 +149,12 @@ class _dashBoardScreenState extends State<dashBoardScreen>
       context,
       MaterialPageRoute(builder: (context) => AddTransactionScreen()),
     );
+  }
+  @override
+  void dispose() {
+    if (_subscriptionTodo != null) {
+      _subscriptionTodo.cancel();
+    }
+    super.dispose();
   }
 }
