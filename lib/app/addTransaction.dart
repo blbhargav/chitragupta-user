@@ -32,7 +32,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    repository.getUserId();
     DateTime now = DateTime.now();
     spendTime = DateFormat('dd-MM-yyyy hh:mm a').format(now);
     _dateController.text = spendTime;
@@ -63,6 +62,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             child: Padding(
               padding: EdgeInsets.all(5),
               child: ListView(
+                reverse: false,
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
@@ -292,7 +292,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       spend.amount = int.parse(amount);
       spend.category = category;
       spend.dateTime = dateTime;
-      spend.date = date;
       spend.title = title;
       spend.description = description;
 

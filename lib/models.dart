@@ -6,7 +6,7 @@ class Spend {
   int amount;
   String key;
   String title;
-  String category, date;
+  String category;
   DateTime dateTime;
   String description;
 
@@ -14,7 +14,6 @@ class Spend {
       : key = snapshot.key,
         amount = snapshot.value['amount'],
         category = snapshot.value['category'],
-        date = snapshot.value['date'],
         dateTime =
             DateTime.fromMillisecondsSinceEpoch(snapshot.value['dateTime']),
         title = snapshot.value['title'],
@@ -25,7 +24,6 @@ class Spend {
       "amount": amount,
       "category": category,
       "dateTime": dateTime.millisecondsSinceEpoch,
-      "date": date,
       "description": description,
       "title": title
     };
@@ -35,7 +33,6 @@ class Spend {
       : amount = json['amount'],
         category = json['category'],
         dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
-        date = json['date'],
         description = json['description'],
         title = json['title'];
 

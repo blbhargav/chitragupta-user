@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     Repository repository=Repository();
     bool signedInLocal=await repository.isUserSignedLocally();
     bool signedInFirebase=await repository.isSignedIn();
+
     if(signedInFirebase && signedInLocal){
       Navigator.pushAndRemoveUntil(
           context,

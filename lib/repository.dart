@@ -7,12 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chitragupta/globals.dart' as globals;
 
 class Repository {
   final FirebaseAuth _firebaseAuth;
   SharedPreferences prefs;
   FirebaseDatabase fbDBRef;
-  static String uid;
+  static String uid=globals.UID;
   //String mode="LIVE";
   String mode = "TEST";
 
@@ -42,6 +43,8 @@ class Repository {
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
+    globals.isLoggedIn=currentUser != null;
+    globals.UID=currentUser.uid;
     return currentUser != null;
   }
 
@@ -58,6 +61,7 @@ class Repository {
   Future<String> getUserId() async {
     FirebaseUser user = await _firebaseAuth.currentUser();
     uid = user.uid;
+    globals.UID=uid;
     return user.uid;
   }
 

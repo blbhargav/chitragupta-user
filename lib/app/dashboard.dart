@@ -5,32 +5,74 @@ import 'package:chitragupta/models.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:chitragupta/globals.dart' as globals;
+import 'package:intl/intl.dart';
 
 class dashBoardScreen extends StatefulWidget {
   @override
   _dashBoardScreenState createState() => _dashBoardScreenState();
 }
 
-class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderStateMixin {
+class _dashBoardScreenState extends State<dashBoardScreen>
+    with TickerProviderStateMixin {
   String userName = "Hi Bhargav";
   String currency = "₹";
   StreamSubscription _subscriptionTodo;
+  List<Spend> recentSpends = new List();
+  int today = 0, yesterday = 0, month = 0;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Repository repository=new Repository();
-    repository.getUserId().then((res){
-      repository.getRecentRecords(_updateRecentSpends)
-          .then((StreamSubscription s) => _subscriptionTodo = s);
+    Repository repository = new Repository();
+    repository
+        .getRecentRecords(_updateRecentSpends)
+        .then((StreamSubscription s) => _subscriptionTodo = s);
+  }
+
+  _updateRecentSpends(SpendsList spendsList) {
+    List<Spend> spendList = spendsList.spendList;
+    List<Spend> tempRecentSpends = new List();
+    int tempToday = 0, tempYesterday = 0, tempMonth = 0;
+
+    spendList.sort((a, b) {
+      var adate = a.dateTime;
+      var bdate = b.dateTime;
+      return -adate.compareTo(bdate);
+    });
+    var currentDate = DateTime.now();
+    var yesterdayDate =
+        new DateTime(currentDate.year, currentDate.month, currentDate.day - 1);
+
+    spendList.forEach((spend) {
+      int i = 0;
+      if (i < 20) {
+        i++;
+        tempRecentSpends.add(spend);
+      }
+      String todayDate = DateFormat('dd-MM-yyyy').format(currentDate);
+      String yesterdayDateString =
+          DateFormat('dd-MM-yyyy').format(yesterdayDate);
+
+      if (todayDate == DateFormat('dd-MM-yyyy').format(spend.dateTime)) {
+        tempToday += spend.amount;
+      } else if (yesterdayDateString ==
+          DateFormat('dd-MM-yyyy').format(spend.dateTime)) {
+        tempYesterday += spend.amount;
+      }
+
+      tempMonth += spend.amount;
     });
 
-
-
+    setState(() {
+      recentSpends = tempRecentSpends;
+      today = tempToday;
+      yesterday = tempYesterday;
+      month = tempMonth;
+    });
   }
-  _updateRecentSpends(SpendsList spendsList) {
-   print("BLB dashboard ${spendsList.spendList.length}");
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +128,8 @@ class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderSt
                             Padding(
                               padding: EdgeInsets.all(5),
                             ),
-                            Text("₹ 5", style: TextStyle(color: Colors.white)),
+                            Text("₹ ${yesterday}",
+                                style: TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -104,7 +147,7 @@ class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderSt
                             Padding(
                               padding: EdgeInsets.all(5),
                             ),
-                            Text("₹ 5000",
+                            Text("₹ ${today}",
                                 style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
@@ -123,7 +166,8 @@ class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderSt
                             Padding(
                               padding: EdgeInsets.all(5),
                             ),
-                            Text("₹ 5", style: TextStyle(color: Colors.white)),
+                            Text("₹ ${month}",
+                                style: TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -132,7 +176,97 @@ class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderSt
                 ),
               ],
             ),
-          )
+          ),
+          Container(
+            padding: EdgeInsets.all(5),
+            child: Text(
+              "Recent Spends This Month",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue,fontSize: 18),
+            ),
+          ),
+          Container(
+            child: recentSpends.length <= 0
+                ? Center(
+                    heightFactor: 20,
+                    child: Text("No spends in this month yet"),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(5),
+                      scrollDirection: Axis.vertical,
+                      itemCount: recentSpends.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  PhysicalModel(
+                                    borderRadius:
+                                        new BorderRadius.circular(25.0),
+                                    color: Colors.white,
+                                    child: new Container(
+                                      width: 50.0,
+                                      height: 50.0,
+                                      decoration: new BoxDecoration(
+                                        borderRadius:
+                                            new BorderRadius.circular(25.0),
+                                        border: new Border.all(
+                                          width: 1.0,
+                                          color: Colors.cyan,
+                                        ),
+                                      ),
+                                      child: Icon(getIcon(
+                                          recentSpends[index].category)),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 5),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        recentSpends[index].title,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 5),
+                                      ),
+                                      Text("#${recentSpends[index].category}",style: TextStyle(fontStyle: FontStyle.italic),),
+
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 5),
+                                      ),
+                                      Text(
+                                        DateFormat('dd-MM-yyyy hh:mm a').format(
+                                            recentSpends[index].dateTime),
+                                        style: TextStyle(color: Colors.black45),
+                                      )
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "₹ ${recentSpends[index].amount}",
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              new Divider(
+                                color: Colors.black12,
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -150,6 +284,7 @@ class _dashBoardScreenState extends State<dashBoardScreen> with TickerProviderSt
       MaterialPageRoute(builder: (context) => AddTransactionScreen()),
     );
   }
+
   @override
   void dispose() {
     if (_subscriptionTodo != null) {
