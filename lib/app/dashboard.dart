@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chitragupta/app/addTransaction.dart';
+import 'package:chitragupta/app/displaySpend.dart';
 import 'package:chitragupta/models.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -196,72 +197,80 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                       scrollDirection: Axis.vertical,
                       itemCount: recentSpends.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  PhysicalModel(
-                                    borderRadius:
-                                        new BorderRadius.circular(25.0),
-                                    color: Colors.white,
-                                    child: new Container(
-                                      width: 50.0,
-                                      height: 50.0,
-                                      decoration: new BoxDecoration(
-                                        borderRadius:
-                                            new BorderRadius.circular(25.0),
-                                        border: new Border.all(
-                                          width: 1.0,
-                                          color: Colors.cyan,
+                        return InkWell(
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    PhysicalModel(
+                                      borderRadius:
+                                      new BorderRadius.circular(25.0),
+                                      color: Colors.white,
+                                      child: new Container(
+                                        width: 50.0,
+                                        height: 50.0,
+                                        decoration: new BoxDecoration(
+                                          borderRadius:
+                                          new BorderRadius.circular(25.0),
+                                          border: new Border.all(
+                                            width: 1.0,
+                                            color: Colors.cyan,
+                                          ),
                                         ),
+                                        child: Icon(getIcon(
+                                            recentSpends[index].category)),
                                       ),
-                                      child: Icon(getIcon(
-                                          recentSpends[index].category)),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 5),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        recentSpends[index].title,
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 5),
-                                      ),
-                                      Text("#${recentSpends[index].category}",style: TextStyle(fontStyle: FontStyle.italic),),
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 5),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          recentSpends[index].title,
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 5),
+                                        ),
+                                        Text("#${recentSpends[index].category}",style: TextStyle(fontStyle: FontStyle.italic),),
 
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 5),
-                                      ),
-                                      Text(
-                                        DateFormat('dd-MM-yyyy hh:mm a').format(
-                                            recentSpends[index].dateTime),
-                                        style: TextStyle(color: Colors.black45),
-                                      )
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      "₹ ${recentSpends[index].amount}",
-                                      textAlign: TextAlign.end,
-                                      style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 5),
+                                        ),
+                                        Text(
+                                          DateFormat('dd-MM-yyyy hh:mm a').format(
+                                              recentSpends[index].dateTime),
+                                          style: TextStyle(color: Colors.black45),
+                                        )
+                                      ],
                                     ),
-                                  )
-                                ],
-                              ),
-                              new Divider(
-                                color: Colors.black12,
-                              )
-                            ],
+                                    Expanded(
+                                      child: Text(
+                                        "₹ ${recentSpends[index].amount}",
+                                        textAlign: TextAlign.end,
+                                        style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                new Divider(
+                                  color: Colors.black12,
+                                )
+                              ],
+                            ),
                           ),
+                          onTap: (){
+                            navigateToDisplaySpend(recentSpends[index]);
+                          },
+                          onDoubleTap: (){
+                            navigateToDisplaySpend(recentSpends[index]);
+                          },
                         );
                       },
                     ),
@@ -291,5 +300,9 @@ class _dashBoardScreenState extends State<dashBoardScreen>
       _subscriptionTodo.cancel();
     }
     super.dispose();
+  }
+
+  void navigateToDisplaySpend(Spend recentSpend) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => DisplaySpendScreen(recentSpend)));
   }
 }

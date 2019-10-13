@@ -1,3 +1,4 @@
+import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/models.dart';
 import 'package:chitragupta/progress.dart';
@@ -10,11 +11,15 @@ import 'package:intl/intl.dart';
 import '../login.dart';
 
 class AddTransactionScreen extends StatefulWidget {
+  Spend spend;
+  AddTransactionScreen({this.spend});
   @override
-  _AddTransactionScreenState createState() => _AddTransactionScreenState();
+  _AddTransactionScreenState createState() => _AddTransactionScreenState(oldSpend: spend);
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
+  Spend oldSpend;
+  _AddTransactionScreenState({this.oldSpend});
   TextEditingController _amountController = new TextEditingController();
   TextEditingController _spendController = new TextEditingController();
   TextEditingController _dateController = new TextEditingController();
@@ -37,6 +42,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _dateController.text = spendTime;
     time = TimeOfDay.now();
     dateTime = DateTime.now();
+
+    if(oldSpend!=null){
+      _amountController.text="${oldSpend.amount}";
+      _spendController.text=oldSpend.title;
+      if(oldSpend.description.isNotEmpty)
+        _descriptionController.text=oldSpend.description;
+
+      spendTime=DateFormat('dd-MM-yyyy hh:mm a').format(oldSpend.dateTime);
+      dateTime=oldSpend.dateTime;
+      time=TimeOfDay.fromDateTime(dateTime);
+      selectedCat=oldSpend.category;
+    }
   }
 
   List<Color> saveGradient = [
@@ -295,7 +312,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       spend.title = title;
       spend.description = description;
 
-      saveInDB(context, spend);
+      if(oldSpend!=null){
+        updateSpend(context,spend);
+      }else{
+        saveInDB(context, spend);
+      }
     }
   }
 
@@ -355,6 +376,67 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   hideProgress() {
     setState(() {
       _laoding = false;
+    });
+  }
+  void showSuccessMessage() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(Duration(seconds: 3), () {
+            Navigator.of(context).pop(true);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => homeScreen()
+                ),
+                ModalRoute.withName("/Home")
+            );
+          });
+          return AlertDialog(
+            title: Text('Successfully Updated',),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok',style: TextStyle(color: Colors.green,fontSize: 18),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => homeScreen()
+                      ),
+                      ModalRoute.withName("/Home")
+                  );
+                },
+              ),
+            ],
+          );
+        });
+  }
+  void updateSpend(BuildContext context, Spend spend) {
+    showProgress();
+    repository.updateSpend(oldSpend,spend).then((res) {
+      hideProgress();
+      setState(() {
+        _amountController.clear();
+        _spendController.clear();
+        //_dateController.clear();
+        _descriptionController.clear();
+      });
+      showSuccessMessage();
+
+      //Navigator.pop(context);
+    }).catchError((err) {
+      hideProgress();
+      final snackBar = SnackBar(
+        content: Text('Something went wrong. Please try after some time.'),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+      globalKey.currentState.showSnackBar(snackBar);
     });
   }
 }

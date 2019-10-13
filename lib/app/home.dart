@@ -21,7 +21,7 @@ class _homeScreenState extends State<homeScreen>with TickerProviderStateMixin{
     return Scaffold(
       body: Center(child: _widgetOptions[_selectedIndex],),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.cyan,
+        backgroundColor: Colors.lightBlue[900],
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -38,6 +38,7 @@ class _homeScreenState extends State<homeScreen>with TickerProviderStateMixin{
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey[400],
         onTap: _onItemTapped,
       ),
     );

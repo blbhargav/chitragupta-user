@@ -98,4 +98,44 @@ class Repository {
 
     return subscription;
   }
+  Future deleteSpend(Spend spend){
+    String month = DateFormat('MM').format(spend.dateTime);
+    String year = DateFormat('yyyy').format(spend.dateTime);
+    return fbDBRef
+        .reference()
+        .child(mode)
+        .child("Spends")
+        .child(uid)
+        .child(year)
+        .child(month)
+        .child(spend.key).remove();
+  }
+  Future updateSpend(Spend oldspend,Spend newSpend){
+      if((oldspend.dateTime.year==newSpend.dateTime.year)&&(oldspend.dateTime.month==newSpend.dateTime.month)){
+        String month = DateFormat('MM').format(newSpend.dateTime);
+        String year = DateFormat('yyyy').format(newSpend.dateTime);
+        return fbDBRef
+            .reference()
+            .child(mode)
+            .child("Spends")
+            .child(uid)
+            .child(year)
+            .child(month)
+            .child(oldspend.key).set(newSpend);
+
+      }else{
+        deleteSpend(oldspend);
+        String month = DateFormat('MM').format(newSpend.dateTime);
+        String year = DateFormat('yyyy').format(newSpend.dateTime);
+        return fbDBRef
+            .reference()
+            .child(mode)
+            .child("Spends")
+            .child(uid)
+            .child(year)
+            .child(month)
+            .child(oldspend.key).set(newSpend);
+      }
+
+  }
 }
