@@ -64,7 +64,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Widget build(BuildContext context) {
     int countRow;
     double width = MediaQuery.of(context).size.width;
-    int widthCard = 70;
+    int widthCard = 75;
     countRow = width ~/ widthCard;
 
     return ProgressHUD(
@@ -143,7 +143,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(left: 16),
+                        padding: EdgeInsets.only(left: 16,top: 20),
                       ),
                       Icon(Icons.category),
                       Padding(
@@ -155,10 +155,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 5),
+                    padding: EdgeInsets.only(top: 8),
                   ),
                   GridView.count(
                     shrinkWrap: true,
+                    primary: true,
+                    physics: new NeverScrollableScrollPhysics(),
                     crossAxisCount: countRow,
                     crossAxisSpacing: 5.0,
                     mainAxisSpacing: 5.0,

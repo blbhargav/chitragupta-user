@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chitragupta/app/addTransaction.dart';
 import 'package:chitragupta/app/displaySpend.dart';
 import 'package:chitragupta/models.dart';
+import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   StreamSubscription _subscriptionTodo;
   List<Spend> recentSpends = new List();
   int today = 0, yesterday = 0, month = 0;
+  bool _laoding = true;
 
   @override
   void initState() {
@@ -34,6 +36,9 @@ class _dashBoardScreenState extends State<dashBoardScreen>
 
   _updateRecentSpends(SpendsList spendsList) {
     if(spendsList==null){
+      setState(() {
+        _laoding=false;
+      });
       return;
     }
     List<Spend> spendList = spendsList.spendList;
@@ -74,12 +79,13 @@ class _dashBoardScreenState extends State<dashBoardScreen>
       today = tempToday;
       yesterday = tempYesterday;
       month = tempMonth;
+      _laoding=false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ProgressHUD(child: Scaffold(
       body: Column(
         children: <Widget>[
 
@@ -205,15 +211,25 @@ class _dashBoardScreenState extends State<dashBoardScreen>
             flex: 3,
           ),
 
-          Expanded(
-            child:  Container(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                "Recent Spends This Month",
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue,fontSize: 18),
-              ),
+//          Expanded(
+//            child:  Container(
+//              alignment: FractionalOffset.bottomCenter,color: Colors.amberAccent,
+//              padding: EdgeInsets.all(10),
+//              child: Text(
+//                "Recent Spends This Month",
+//                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue,fontSize: 18),
+//              ),
+//            ),
+//            flex: 1,
+//          ),
+
+          Container(
+            alignment: FractionalOffset.bottomCenter,
+            padding: EdgeInsets.only(top: 20,bottom: 8),
+            child: Text(
+              "Recent Spends This Month",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue,fontSize: 18),
             ),
-            flex: 1,
           ),
 
           Expanded(
@@ -223,43 +239,42 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                 heightFactor: 20,
                 child: Text("No spends in this month yet"),
               )
-                  : Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(5),
-                  scrollDirection: Axis.vertical,
-                  itemCount: recentSpends.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                PhysicalModel(
-                                  borderRadius:
-                                  new BorderRadius.circular(25.0),
-                                  color: Colors.white,
-                                  child: new Container(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    decoration: new BoxDecoration(
-                                      borderRadius:
-                                      new BorderRadius.circular(25.0),
-                                      border: new Border.all(
-                                        width: 1.0,
-                                        color: Colors.cyan,
-                                      ),
+                  : ListView.builder(
+                padding: EdgeInsets.all(5),
+                scrollDirection: Axis.vertical,
+                itemCount: recentSpends.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              PhysicalModel(
+                                borderRadius:
+                                new BorderRadius.circular(25.0),
+                                color: Colors.white,
+                                child: new Container(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  decoration: new BoxDecoration(
+                                    borderRadius:
+                                    new BorderRadius.circular(25.0),
+                                    border: new Border.all(
+                                      width: 1.0,
+                                      color: Colors.cyan,
                                     ),
-                                    child: Icon(getIcon(
-                                        recentSpends[index].category)),
                                   ),
+                                  child: Icon(getIcon(
+                                      recentSpends[index].category)),
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(right: 5),
-                                ),
-                                Column(
+                              ),
+                              Padding(padding: EdgeInsets.all(5),),
+                              Expanded(
+                                flex: 6,
+                                child: Column(
                                   crossAxisAlignment:
                                   CrossAxisAlignment.start,
                                   children: <Widget>[
@@ -276,36 +291,38 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                       padding: EdgeInsets.only(top: 5),
                                     ),
                                     Text(
-                                      DateFormat('dd-MM-yyyy hh:mm a').format(
+                                      DateFormat('dd-MMM-yyyy hh:mm a').format(
                                           recentSpends[index].dateTime),
                                       style: TextStyle(color: Colors.black45),
                                     )
                                   ],
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    "₹ ${recentSpends[index].amount}",
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
-                                  ),
-                                )
-                              ],
-                            ),
-                            new Divider(
-                              color: Colors.black12,
-                            )
-                          ],
-                        ),
+                              ),
+
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  "₹ ${recentSpends[index].amount}",
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
+                                ),
+                              )
+                            ],
+                          ),
+                          new Divider(
+                            color: Colors.black12,
+                          )
+                        ],
                       ),
-                      onTap: (){
-                        navigateToDisplaySpend(recentSpends[index]);
-                      },
-                      onDoubleTap: (){
-                        navigateToDisplaySpend(recentSpends[index]);
-                      },
-                    );
-                  },
-                ),
+                    ),
+                    onTap: (){
+                      navigateToDisplaySpend(recentSpends[index]);
+                    },
+                    onDoubleTap: (){
+                      navigateToDisplaySpend(recentSpends[index]);
+                    },
+                  );
+                },
               ),
             ),
             flex: 6,
@@ -321,7 +338,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
           addTransactionPage();
         },
       ),
-    );
+    ), inAsyncCall: _laoding,opacity: 0.3,);
   }
 
   void addTransactionPage() {

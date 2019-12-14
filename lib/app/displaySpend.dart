@@ -31,7 +31,7 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
                 child: Icon(
                   Icons.delete,
                 ),
-                onTap: (){
+                onTap: () {
                   showDeleteAlert();
                 },
               ),
@@ -46,32 +46,64 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
                 height: 120,
                 color: Colors.lightBlue[900],
                 child: Container(
-                  padding: EdgeInsets.all(5),
+                  padding: EdgeInsets.all(10),
                   child: Center(
                     child: Column(
                       children: <Widget>[
-                        Text("#${spend.category}",style: TextStyle(color: Colors.white),),
-                        Padding(padding: EdgeInsets.all(5),),
-                        Text("₹ ${spend.amount}",style: TextStyle(color: Colors.white,fontSize: 35,fontWeight: FontWeight.bold)),
-                        Padding(padding: EdgeInsets.all(5),),
+                        Text(
+                          "#${spend.category}",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(5),
+                        ),
+                        Text("₹ ${spend.amount}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold)),
+                        Padding(
+                          padding: EdgeInsets.all(5),
+                        ),
                         Expanded(
-                          child: Text("${DateFormat('dd-MMMM-yyyy hh:mm a').format(spend.dateTime)}",style: TextStyle(color: Colors.white),),
+                          child: Text(
+                            "${DateFormat('dd-MMMM-yyyy hh:mm a').format(spend.dateTime)}",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         )
                       ],
                     ),
                   ),
                 ),
               ),
-              
-              Padding(padding: EdgeInsets.all(5),),
-
-              Text("${spend.title}",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.center,),
-
               Padding(
                 padding: EdgeInsets.all(5),
-                child: Text("${spend.description}"),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  "${spend.title}",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text.rich(
+                  TextSpan(
+                    //text: 'Hello', // default text style
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: 'Description :- ',
+                          style: TextStyle(fontStyle: FontStyle.italic,color: Colors.grey)),
+                      TextSpan(
+                          text: "${spend.description}",
+                          style: TextStyle(fontWeight: FontWeight.normal)),
+                    ],
+                    //text: "${spend.description}",
+                  ),
+                ), //Text("Description:- ${spend.description}"),
               )
-
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -95,19 +127,26 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Deleting will permenatly remove this spend transaction from database.'),
+                Text(
+                    'Deleting will permenatly remove this transaction from database.'),
               ],
             ),
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('No',style: TextStyle(color: Colors.green),),
+              child: Text(
+                'No',
+                style: TextStyle(color: Colors.green),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             FlatButton(
-              child: Text('DELETE',style: TextStyle(color: Colors.red),),
+              child: Text(
+                'DELETE',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 deleteSpend();
@@ -120,18 +159,18 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
   }
 
   void deleteSpend() {
-    Repository repository=new Repository();
+    Repository repository = new Repository();
     setState(() {
-      _loading=true;
+      _loading = true;
     });
-    repository.deleteSpend(spend).then((res){
+    repository.deleteSpend(spend).then((res) {
       setState(() {
-        _loading=false;
+        _loading = false;
       });
       showSuccessMessage();
-    }).catchError((err){
+    }).catchError((err) {
       setState(() {
-        _loading=false;
+        _loading = false;
       });
     });
   }
@@ -145,10 +184,15 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
             Navigator.pop(context);
           });
           return AlertDialog(
-            title: Text('Successfully deleted',),
+            title: Text(
+              'Successfully deleted',
+            ),
             actions: <Widget>[
               FlatButton(
-                child: Text('Ok',style: TextStyle(color: Colors.green,fontSize: 18),),
+                child: Text(
+                  'Ok',
+                  style: TextStyle(color: Colors.green, fontSize: 18),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.pop(context);
@@ -160,6 +204,11 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
   }
 
   void navigateToEditSpendPage() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransactionScreen(spend: spend,)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddTransactionScreen(
+                  spend: spend,
+                )));
   }
 }
