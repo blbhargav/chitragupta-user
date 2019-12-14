@@ -44,7 +44,8 @@ class Repository {
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
     globals.isLoggedIn=currentUser != null;
-    globals.UID=currentUser.uid;
+    if(currentUser != null)
+      globals.UID=currentUser.uid;
     return currentUser != null;
   }
 
@@ -92,8 +93,13 @@ class Repository {
         .child(month)
         .onValue
         .listen((Event event) {
-      var spends = new SpendsList.fromSnapshot(event.snapshot);
-      onData(spends);
+          if(event.snapshot.value!=null){
+            var spends = new SpendsList.fromSnapshot(event.snapshot);
+            onData(spends);
+          }else{
+            onData(null);
+          }
+
     });
 
     return subscription;
