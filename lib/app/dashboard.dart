@@ -134,28 +134,24 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                           Expanded(
                             flex: 2,
                             child: Container(
-                              child: Align(
-                                alignment: FractionalOffset.bottomCenter,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text(
-                                      "Yesterday",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(5),
-                                    ),
-                                    Text("₹ ${yesterday}",
-                                        style: TextStyle(color: Colors.white)),
-                                    Padding(
-                                      padding: EdgeInsets.all(5),
-                                    ),
-                                  ],
-                                ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Text("Month",
+                                      style: TextStyle(color: Colors.white)),
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                  ),
+                                  Text("₹ ${month}",
+                                      style: TextStyle(color: Colors.white)),
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
+
                           Expanded(
                             flex: 6,
                             child: Container(
@@ -180,26 +176,33 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                               ),
                             ),
                           ),
+
                           Expanded(
                             flex: 2,
                             child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text("Month",
-                                      style: TextStyle(color: Colors.white)),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text("₹ ${month}",
-                                      style: TextStyle(color: Colors.white)),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                ],
+                              child: Align(
+                                alignment: FractionalOffset.bottomCenter,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(
+                                      "Yesterday",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(5),
+                                    ),
+                                    Text("₹ ${yesterday}",
+                                        style: TextStyle(color: Colors.white)),
+                                    Padding(
+                                      padding: EdgeInsets.all(5),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          )
+                          ),
+
                         ],
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:chitragupta/app/profile.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,6 @@ class _settingsState extends State<Settings>{
         children: <Widget>[
 
           InkWell(
-            onTap: (){},
             child: Container(
               padding: EdgeInsets.all(10),
               margin: EdgeInsets.all(5),
@@ -32,6 +32,12 @@ class _settingsState extends State<Settings>{
                 padding: EdgeInsets.all(10),
               ),
             ),
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
           ),
 
           InkWell(
