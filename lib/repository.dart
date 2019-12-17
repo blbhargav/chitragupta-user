@@ -54,16 +54,24 @@ class Repository {
     return prefs.getBool("logged_in") ?? false;
   }
 
-  Future<void> updateUserSignedLocally(bool signed) async {
+  Future<void> updateUserSignedLocally(bool signed,String uid) async {
     if (prefs == null) prefs = await SharedPreferences.getInstance();
+    prefs.setString("uid", uid);
     return prefs.setBool("logged_in", signed);
   }
 
   Future<String> getUserId() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    uid = user.uid;
+    if (prefs == null) prefs = await SharedPreferences.getInstance();
+    if(prefs.getString("uid")!=null){
+      uid=prefs.getString("uid");
+    }else{
+      FirebaseUser user = await _firebaseAuth.currentUser();
+      uid = user.uid;
+      prefs.setString("uid", uid);
+    }
+
     globals.UID=uid;
-    return user.uid;
+    return uid;
   }
 
   Future addSpend(Spend spend) {

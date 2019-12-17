@@ -187,7 +187,7 @@ class _Login extends State<Login> {
         setState(() {
           _loading = false;
         });
-        repository.updateUserSignedLocally(true);
+        repository.updateUserSignedLocally(true,res.uid);
         navigateToHome();
       }).catchError((e) {
         print("BLB login $e");
@@ -247,8 +247,7 @@ class _Login extends State<Login> {
       repository
           .signUp(_userIdController.text, _passwordController.text)
           .then((res) {
-        print("BLB $res");
-        repository.updateUserSignedLocally(true);
+        repository.updateUserSignedLocally(true,res.uid);
         setState(() {
           _loading = false;
         });

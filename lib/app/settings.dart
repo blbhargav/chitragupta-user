@@ -83,7 +83,7 @@ class _settingsState extends State<Settings>{
   Future _logout() async {
     Repository repository=Repository();
     await repository.signOut();
-    await repository.updateUserSignedLocally(false);
+    await repository.updateUserSignedLocally(false,"");
 
     Navigator.pushAndRemoveUntil(
         context,
