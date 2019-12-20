@@ -18,9 +18,8 @@ class _ChangePasswordState extends State<ChangePassword> {
     Color(0xFF03A0FE),
   ];
 
-  String oldErrorTV,newErrorTV,confirmErrorTV;
-  bool _oldPass = true, _newPass = true,_loading=false;
-
+  String oldErrorTV, newErrorTV, confirmErrorTV;
+  bool _oldPass = true, _newPass = true, _loading = false;
 
   TextEditingController _oldController = new TextEditingController();
   TextEditingController _newController = new TextEditingController();
@@ -39,7 +38,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           child: ListView(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(left: 10, right: 10,top: 10),
+                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                 child: new TextField(
                   controller: this._oldController,
                   obscureText: _oldPass,
@@ -51,9 +50,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                             : Icon(Icons.visibility_off),
                         onTap: () {
                           setState(() {
-                            if(_oldPass)
-                              _oldPass=false;
-                            else _oldPass=true;
+                            if (_oldPass)
+                              _oldPass = false;
+                            else
+                              _oldPass = true;
                           });
                         },
                       ),
@@ -67,7 +67,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 10, right: 10,top: 10),
+                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                 child: new TextField(
                   controller: this._newController,
                   obscureText: _newPass,
@@ -80,9 +80,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                             : Icon(Icons.visibility_off),
                         onTap: () {
                           setState(() {
-                            if(_newPass)
-                              _newPass=false;
-                            else _newPass=true;
+                            if (_newPass)
+                              _newPass = false;
+                            else
+                              _newPass = true;
                           });
                         },
                       ),
@@ -96,9 +97,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 10, right: 10,top: 10),
+                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                 child: new TextField(
-                  controller: this._confirmController,obscureText: true,
+                  controller: this._confirmController,
+                  obscureText: true,
                   decoration: InputDecoration(
                       labelText: "Confirm Password",
                       //prefixIcon: Icon(Icons.info),
@@ -137,55 +139,75 @@ class _ChangePasswordState extends State<ChangePassword> {
     String confirmPass = _confirmController.text;
 
     setState(() {
-      oldErrorTV=null;
-      newErrorTV=null;
-      confirmErrorTV=null;
+      oldErrorTV = null;
+      newErrorTV = null;
+      confirmErrorTV = null;
     });
 
-    if (old.isEmpty){
+    if (old.isEmpty) {
       setState(() {
-        oldErrorTV="Please enter old password";
+        oldErrorTV = "Please enter old password";
       });
-    }else if (newPass.isEmpty){
+    } else if (newPass.isEmpty) {
       setState(() {
-        newErrorTV="Please enter new password";
+        newErrorTV = "Please enter new password";
       });
-    }else if (confirmPass.isEmpty){
+    } else if (confirmPass.isEmpty) {
       setState(() {
-        confirmErrorTV="Please re-enter new password";
+        confirmErrorTV = "Please re-enter new password";
       });
-    }else if (confirmPass.length<6){
+    } else if (confirmPass.length < 6) {
       setState(() {
-        confirmErrorTV="Password too short";
+        confirmErrorTV = "Password too short";
       });
-    }else if(!newPass.contains(confirmPass)){
+    } else if (!newPass.contains(confirmPass)) {
       setState(() {
-        confirmErrorTV="Password doesn't match with new password";
+        confirmErrorTV = "Password doesn't match with new password";
       });
-    }else{
-      submitDetails(old,newPass);
+    } else {
+      submitDetails(old, newPass);
     }
-
   }
 
-  void submitDetails(String old, String newPass) {
+  Future<void> submitDetails(String old, String newPass) async {
     setState(() {
-      _loading=true;
+      _loading = true;
     });
     Repository repository = new Repository();
 
-    repository.updatePassword(old, newPass).then((res){
-      print("BLB success ${res}");
-      setState(() {
-        _loading=false;
+    repository.reAuthenticateUser(old).then((res) {
+
+      repository.updatePassword(newPass,res).then((result){
+        setState(() {
+          _loading=false;
+        });
+      }).catchError((e){
+        setState(() {
+          _loading=false;
+        });
       });
-    }).catchError((e){
-      print("BLB error ${e}");
+    }).catchError((e) {
       setState(() {
         _loading=false;
+        oldErrorTV="Wrong password";
       });
     });
-    //repository.
 
+    //repository.updatePassword(old, newPass);
+
+
+
+//    repository.updatePassword(old, newPass).then((res){
+//      print("BLB success ${res}");
+//      setState(() {
+//        _loading=false;
+//      });
+//    }).catchError((e){
+//      print("BLB error ${e}");
+//      setState(() {
+//        _loading=false;
+//      });
+//    });
+    //repository.
   }
 }

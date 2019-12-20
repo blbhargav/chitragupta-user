@@ -33,33 +33,18 @@ class Repository {
     );
   }
 
-  updatePassword(String oldPassword, String newPassword) async {
-//    _firebaseAuth.signInWithEmailAndPassword(
-//      email: loginId,
-//      password: password,
-//    ).then((onValue){
-//      return onValue.updatePassword(password)
-//    });
+  Future updatePassword(String newPassword,FirebaseUser res) async {
+    final currentUser = await _firebaseAuth.currentUser();
+    return currentUser.updatePassword(newPassword);
+  }
+
+  Future reAuthenticateUser(String oldPassword) async {
     final currentUser = await _firebaseAuth.currentUser();
     AuthCredential authCredential = EmailAuthProvider.getCredential(
       email: currentUser.email,
       password: oldPassword,
     );
-    currentUser.reauthenticateWithCredential(authCredential).then((res) {
-      print("BLB repo success");
-      currentUser.reauthenticateWithCredential(EmailAuthProvider.getCredential(
-        email: currentUser.email,
-        password: newPassword,
-      )).then((res) {
-        return "Successfully updated.";
-      }).catchError((e) {
-        print("BLB repo error $e");
-        return e;
-      });
-    }).catchError((err) {
-      print("BLB repo error $err");
-      return err.toString();
-    });
+    return currentUser.reauthenticateWithCredential(authCredential);
   }
 
   Future sendResetLink(String email) {
