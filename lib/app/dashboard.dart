@@ -30,7 +30,6 @@ class _dashBoardScreenState extends State<dashBoardScreen>
     super.initState();
     Repository repository = new Repository();
 
-    repository.getUserId();
     repository
         .getRecentRecords(_updateRecentSpends)
         .then((StreamSubscription s) => _subscriptionTodo = s);

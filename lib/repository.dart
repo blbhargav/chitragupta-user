@@ -13,7 +13,7 @@ class Repository {
   final FirebaseAuth _firebaseAuth;
   SharedPreferences prefs;
   FirebaseDatabase fbDBRef;
-  static String uid=globals.UID;
+  static String uid = globals.UID;
   //String mode="LIVE";
   String mode = "TEST";
 
@@ -33,6 +33,35 @@ class Repository {
     );
   }
 
+  updatePassword(String oldPassword, String newPassword) async {
+//    _firebaseAuth.signInWithEmailAndPassword(
+//      email: loginId,
+//      password: password,
+//    ).then((onValue){
+//      return onValue.updatePassword(password)
+//    });
+    final currentUser = await _firebaseAuth.currentUser();
+    AuthCredential authCredential = EmailAuthProvider.getCredential(
+      email: currentUser.email,
+      password: oldPassword,
+    );
+    currentUser.reauthenticateWithCredential(authCredential).then((res) {
+      print("BLB repo success");
+      currentUser.reauthenticateWithCredential(EmailAuthProvider.getCredential(
+        email: currentUser.email,
+        password: newPassword,
+      )).then((res) {
+        return "Successfully updated.";
+      }).catchError((e) {
+        print("BLB repo error $e");
+        return e;
+      });
+    }).catchError((err) {
+      print("BLB repo error $err");
+      return err.toString();
+    });
+  }
+
   Future sendResetLink(String email) {
     return _firebaseAuth.sendPasswordResetEmail(email: email);
   }
@@ -43,9 +72,8 @@ class Repository {
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
-    globals.isLoggedIn=currentUser != null;
-    if(currentUser != null)
-      globals.UID=currentUser.uid;
+    globals.isLoggedIn = currentUser != null;
+    if (currentUser != null) globals.UID = currentUser.uid;
     return currentUser != null;
   }
 
@@ -54,7 +82,7 @@ class Repository {
     return prefs.getBool("logged_in") ?? false;
   }
 
-  Future<void> updateUserSignedLocally(bool signed,String uid) async {
+  Future<void> updateUserSignedLocally(bool signed, String uid) async {
     if (prefs == null) prefs = await SharedPreferences.getInstance();
     prefs.setString("uid", uid);
     return prefs.setBool("logged_in", signed);
@@ -62,15 +90,15 @@ class Repository {
 
   Future<String> getUserId() async {
     if (prefs == null) prefs = await SharedPreferences.getInstance();
-    if(prefs.getString("uid")!=null){
-      uid=prefs.getString("uid");
-    }else{
+    if (prefs.getString("uid") != null) {
+      uid = prefs.getString("uid");
+    } else {
       FirebaseUser user = await _firebaseAuth.currentUser();
       uid = user.uid;
       prefs.setString("uid", uid);
     }
 
-    globals.UID=uid;
+    globals.UID = uid;
     return uid;
   }
 
@@ -88,7 +116,8 @@ class Repository {
         .set(spend.toJson());
   }
 
-  Future<StreamSubscription<Event>> getRecentRecords(void onData(SpendsList spendsList)) async{
+  Future<StreamSubscription<Event>> getRecentRecords(
+      void onData(SpendsList spendsList)) async {
     String month = DateFormat('MM').format(DateTime.now());
     String year = DateFormat('yyyy').format(DateTime.now());
 
@@ -101,18 +130,18 @@ class Repository {
         .child(month)
         .onValue
         .listen((Event event) {
-          if(event.snapshot.value!=null){
-            var spends = new SpendsList.fromSnapshot(event.snapshot);
-            onData(spends);
-          }else{
-            onData(null);
-          }
-
+      if (event.snapshot.value != null) {
+        var spends = new SpendsList.fromSnapshot(event.snapshot);
+        onData(spends);
+      } else {
+        onData(null);
+      }
     });
 
     return subscription;
   }
-  Future deleteSpend(Spend spend){
+
+  Future deleteSpend(Spend spend) {
     String month = DateFormat('MM').format(spend.dateTime);
     String year = DateFormat('yyyy').format(spend.dateTime);
     return fbDBRef
@@ -122,34 +151,37 @@ class Repository {
         .child(uid)
         .child(year)
         .child(month)
-        .child(spend.key).remove();
+        .child(spend.key)
+        .remove();
   }
-  Future updateSpend(Spend oldspend,Spend newSpend){
-      if((oldspend.dateTime.year==newSpend.dateTime.year)&&(oldspend.dateTime.month==newSpend.dateTime.month)){
-        String month = DateFormat('MM').format(newSpend.dateTime);
-        String year = DateFormat('yyyy').format(newSpend.dateTime);
-        return fbDBRef
-            .reference()
-            .child(mode)
-            .child("Spends")
-            .child(uid)
-            .child(year)
-            .child(month)
-            .child(oldspend.key).set(newSpend);
 
-      }else{
-        deleteSpend(oldspend);
-        String month = DateFormat('MM').format(newSpend.dateTime);
-        String year = DateFormat('yyyy').format(newSpend.dateTime);
-        return fbDBRef
-            .reference()
-            .child(mode)
-            .child("Spends")
-            .child(uid)
-            .child(year)
-            .child(month)
-            .child(oldspend.key).set(newSpend);
-      }
-
+  Future updateSpend(Spend oldspend, Spend newSpend) {
+    if ((oldspend.dateTime.year == newSpend.dateTime.year) &&
+        (oldspend.dateTime.month == newSpend.dateTime.month)) {
+      String month = DateFormat('MM').format(newSpend.dateTime);
+      String year = DateFormat('yyyy').format(newSpend.dateTime);
+      return fbDBRef
+          .reference()
+          .child(mode)
+          .child("Spends")
+          .child(uid)
+          .child(year)
+          .child(month)
+          .child(oldspend.key)
+          .set(newSpend);
+    } else {
+      deleteSpend(oldspend);
+      String month = DateFormat('MM').format(newSpend.dateTime);
+      String year = DateFormat('yyyy').format(newSpend.dateTime);
+      return fbDBRef
+          .reference()
+          .child(mode)
+          .child("Spends")
+          .child(uid)
+          .child(year)
+          .child(month)
+          .child(oldspend.key)
+          .set(newSpend);
+    }
   }
 }

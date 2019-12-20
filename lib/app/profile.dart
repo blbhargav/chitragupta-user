@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -7,6 +8,12 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+  var userName = "Jhon Appleseed";
+  var email = "bhargavbl224gmail.com";
+  var altId = "678 867 0388";
+  var points = "380";
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -49,7 +56,34 @@ class _ProfileState extends State<Profile> {
             ],
           ),
 
+          Container(
+            margin: EdgeInsets.only(left: 10, right: 10, top: 20),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(userName,style: TextStyle(fontSize: 18),),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(email,style: TextStyle(fontSize: 18),),
+                  ),
+
+
+                ],
+              ),
+            ),
+          ),
+
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Image.asset('assets/feather.png',height: 35,width: 35,),
+        onPressed: () {
+
+        },
       ),
     );
   }
