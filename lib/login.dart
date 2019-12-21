@@ -39,6 +39,13 @@ class _Login extends State<Login> {
   String error;
   bool _loading = false;
   _Login(this._userIdController, this._passwordController);
+  Repository repository;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    repository=Repository();
+  }
   @override
   Widget build(BuildContext context) {
     return ProgressHUD(
@@ -177,7 +184,6 @@ class _Login extends State<Login> {
         error = "Password must be at least 6 characters";
       });
     } else {
-      Repository repository = new Repository();
       setState(() {
         _loading = true;
       });
@@ -241,7 +247,6 @@ class _Login extends State<Login> {
         error = "Password must be at least 6 characters";
       });
     } else {
-      Repository repository = new Repository();
       setState(() {
         _loading = true;
       });
@@ -281,7 +286,7 @@ class _Login extends State<Login> {
   void navigateToHome() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => homeScreen()),
+        MaterialPageRoute(builder: (context) => homeScreen(repository)),
         ModalRoute.withName("/Home"));
   }
 
@@ -387,7 +392,6 @@ class _Login extends State<Login> {
   }
 
   void sendResetLink(String email) {
-    Repository repository = new Repository();
     setState(() {
       _loading = true;
     });

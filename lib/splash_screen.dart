@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => homeScreen()
+              builder: (context) => homeScreen(repository)
           ),
           ModalRoute.withName("/Home")
       );

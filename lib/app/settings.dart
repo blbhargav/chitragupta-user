@@ -95,7 +95,7 @@ class _settingsState extends State<Settings>{
           ),
 
           InkWell(
-            onTap: (){_logout();},
+            onTap: (){showLogoutAlert();},
             child: Container(
               padding: EdgeInsets.all(10),
               margin: EdgeInsets.all(5),
@@ -134,6 +134,35 @@ class _settingsState extends State<Settings>{
         context,
         MaterialPageRoute(builder: (context) => SplashScreen()),
         ModalRoute.withName("/Splash"));
+  }
+
+  void showLogoutAlert() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Are you sure to Logout?"),
+            content: Text(""),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Logout"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _logout();
+                },
+              ),
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
 }

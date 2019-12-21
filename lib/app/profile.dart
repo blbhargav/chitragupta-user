@@ -38,9 +38,9 @@ class _ProfileState extends State<Profile> {
   void _updateUserName(User user) {
     this.user=user;
     setState(() {
+      _laoding=false;
       userName=user.name;
       email=user.email;
-      _laoding=false;
     });
   }
 
@@ -54,7 +54,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return ProgressHUD(
       opacity: 0.3,
       inAsyncCall: _laoding,

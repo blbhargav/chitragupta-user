@@ -389,7 +389,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => homeScreen()
+                    builder: (context) => homeScreen(repository)
                 ),
                 ModalRoute.withName("/Home")
             );
@@ -404,7 +404,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => homeScreen()
+                          builder: (context) => homeScreen(repository)
                       ),
                       ModalRoute.withName("/Home")
                   );

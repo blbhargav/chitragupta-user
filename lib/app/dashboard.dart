@@ -12,14 +12,17 @@ import 'package:chitragupta/globals.dart' as globals;
 import 'package:intl/intl.dart';
 
 class dashBoardScreen extends StatefulWidget {
-  dashBoardScreen({Repository repository});
+  Repository repository;
+  dashBoardScreen(Repository repository):repository=repository??Repository();
 
   @override
-  _dashBoardScreenState createState() => _dashBoardScreenState();
+  _dashBoardScreenState createState() => _dashBoardScreenState(repository);
 }
 
 class _dashBoardScreenState extends State<dashBoardScreen>
     with TickerProviderStateMixin {
+  _dashBoardScreenState(Repository repository):repository=repository??Repository();
+
   String userName = "Hi Guest";
   String currency = "₹",noDataTV="";
   StreamSubscription _subscriptionTodo;
@@ -29,10 +32,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   Repository repository;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    repository = new Repository();
-
     repository
         .getRecentRecords(_updateRecentSpends)
         .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){
@@ -42,15 +42,6 @@ class _dashBoardScreenState extends State<dashBoardScreen>
       });
     });
 
-//    repository.getUserProfile().then((res){
-//      print("BLB home user $res");
-//      if(res==null) return;
-//      User user= User.fromSnapshot(snapshot: res);
-//      print("BLB home user ${user.toJson().toString()}");
-//      setState(() {
-//        userName='Hi ${user.name}';
-//      });
-//    });
     repository
         .getUserProfile(_updateUserName)
         .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){});
@@ -387,7 +378,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
 
   void _updateUserName(User user) {
     setState(() {
-      userName=user.name;
+      userName="Hi ${user.name}";
     });
   }
 }
