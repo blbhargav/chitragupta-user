@@ -1,6 +1,6 @@
 import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/app/spends.dart';
-import 'package:chitragupta/models.dart';
+import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _spendController = new TextEditingController();
   TextEditingController _dateController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
-  Repository repository = new Repository();
+  Repository repository;
 
   String spendTime;
   TimeOfDay time;
@@ -37,6 +37,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
+    repository = new Repository();
     DateTime now = DateTime.now();
     spendTime = DateFormat('dd-MM-yyyy hh:mm a').format(now);
     _dateController.text = spendTime;
@@ -69,144 +70,142 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     return ProgressHUD(
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomPadding: true,
           key: globalKey,
           appBar: AppBar(
             title: Text("Add Transaction"),
             backgroundColor: Colors.lightBlue[900],
           ),
-          body: Center(
-            child: Padding(
-              padding: EdgeInsets.all(5),
-              child: ListView(
-                reverse: false,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: new TextField(
-                      controller: this._amountController,
-                      decoration: InputDecoration(
-                          labelText: "Amount *",
-                          prefixText: "₹",
-                          prefixIcon: Icon(Icons.monetization_on),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyan),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.indigo),
-                          ),
-                          errorText: amountErrorTV),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: new TextField(
-                      controller: this._spendController,
-                      decoration: InputDecoration(
-                          labelText: "What is this spend for? *",
-                          prefixIcon: Icon(Icons.info),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyan),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.indigo),
-                          ),
-                          errorText: titleErrorTV),
-                      maxLength: 50,
-                      maxLengthEnforced: true,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: new TextField(
-                      controller: this._dateController,
-                      decoration: InputDecoration(
-                        labelText: "Date-Time *",
-                        prefixIcon: Icon(Icons.date_range),
+          body: Padding(
+            padding: EdgeInsets.all(5),
+            child: ListView(
+              reverse: false,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: new TextField(
+                    controller: this._amountController,
+                    decoration: InputDecoration(
+                        labelText: "Amount *",
+                        prefixText: "₹",
+                        prefixIcon: Icon(Icons.monetization_on),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyan),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.indigo),
                         ),
-                      ),
-                      enableInteractiveSelection: false,
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        showDateTimePicker();
-                      },
-                    ),
+                        errorText: amountErrorTV),
+                    keyboardType: TextInputType.number,
                   ),
-                  Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10, top: 10)),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: 16,top: 20),
-                      ),
-                      Icon(Icons.category),
-                      Padding(
-                        padding: EdgeInsets.only(left: 8),
-                      ),
-                      Text("Category *"),
-                      if (categoryErrorTV != null && categoryErrorTV.length > 0)
-                        Text(categoryErrorTV)
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8),
-                  ),
-                  GridView.count(
-                    shrinkWrap: true,
-                    primary: true,
-                    physics: new NeverScrollableScrollPhysics(),
-                    crossAxisCount: countRow,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                    children: <Widget>[
-                      category("Food"),
-                      category("Entertainment"),
-                      category("Travel"),
-                      category("Snacks"),
-                      category("Fuel"),
-                      category("Bills"),
-                      category("Shopping"),
-                      category("Health"),
-                      category("Others"),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: new TextField(
-                      controller: this._descriptionController,
-                      decoration: InputDecoration(
-                        labelText: "Description",
-                        prefixIcon: Icon(Icons.description),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: new TextField(
+                    controller: this._spendController,
+                    decoration: InputDecoration(
+                        labelText: "What is this spend for? *",
+                        prefixIcon: Icon(Icons.info),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyan),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.indigo),
                         ),
+                        errorText: titleErrorTV),
+                    maxLength: 50,
+                    maxLengthEnforced: true,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: new TextField(
+                    controller: this._dateController,
+                    decoration: InputDecoration(
+                      labelText: "Date-Time *",
+                      prefixIcon: Icon(Icons.date_range),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.cyan),
                       ),
-                      maxLength: 100,
-                      maxLengthEnforced: true,
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.indigo),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 5),
-                  ),
-                  GestureDetector(
-                    child: Center(
-                      child: roundedRectButton("Save", saveGradient, false),
-                    ),
+                    enableInteractiveSelection: false,
                     onTap: () {
-                      validate(context);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                      showDateTimePicker();
                     },
-                  )
-                ],
-              ),
+                  ),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 10)),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 16,top: 20),
+                    ),
+                    Icon(Icons.category),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8),
+                    ),
+                    Text("Category *"),
+                    if (categoryErrorTV != null && categoryErrorTV.length > 0)
+                      Text(categoryErrorTV)
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                ),
+                GridView.count(
+                  shrinkWrap: true,
+                  primary: true,
+                  physics: new NeverScrollableScrollPhysics(),
+                  crossAxisCount: countRow,
+                  crossAxisSpacing: 5.0,
+                  mainAxisSpacing: 5.0,
+                  children: <Widget>[
+                    category("Food"),
+                    category("Entertainment"),
+                    category("Travel"),
+                    category("Snacks"),
+                    category("Fuel"),
+                    category("Bills"),
+                    category("Shopping"),
+                    category("Health"),
+                    category("Others"),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: new TextField(
+                    controller: this._descriptionController,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      prefixIcon: Icon(Icons.description),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.cyan),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.indigo),
+                      ),
+                    ),
+                    maxLength: 100,
+                    maxLengthEnforced: true,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5),
+                ),
+                GestureDetector(
+                  child: Center(
+                    child: roundedRectButton("Save", saveGradient, false),
+                  ),
+                  onTap: () {
+                    validate(context);
+                  },
+                )
+              ],
             ),
           ),
         ),
@@ -356,6 +355,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       //Navigator.pop(context);
     }).catchError((err) {
       hideProgress();
+      print(err);
       final snackBar = SnackBar(
         content: Text('Something went wrong. Please try after some time.'),
         action: SnackBarAction(

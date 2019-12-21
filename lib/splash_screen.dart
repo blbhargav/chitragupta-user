@@ -15,14 +15,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     var _duration = new Duration(seconds: 5);
     return new Timer(_duration, _checkUserHistory);
   }
-
+  Repository repository;
   @override
   void initState() {
     super.initState();
+    repository=Repository();
     startTime();
   }
   void _checkUserHistory() async {
-    Repository repository=Repository();
+
     bool signedInLocal=await repository.isUserSignedLocally();
     bool signedInFirebase=await repository.isSignedIn();
 

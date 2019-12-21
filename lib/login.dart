@@ -2,6 +2,7 @@ import 'package:chitragupta/app/dashboard.dart';
 import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/background.dart';
 import 'package:chitragupta/inputWidget.dart';
+import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
@@ -246,8 +247,11 @@ class _Login extends State<Login> {
       });
       repository
           .signUp(_userIdController.text, _passwordController.text)
-          .then((res) {
-        repository.updateUserSignedLocally(true,res.uid);
+          .then((res) async {
+        await repository.updateUserSignedLocally(true,res.uid);
+        User user=new User(email:_userIdController.text,uid:res.uid);
+        user.name="Guest";
+        await repository.createUserProfile(user);
         setState(() {
           _loading = false;
         });

@@ -176,38 +176,45 @@ class _ChangePasswordState extends State<ChangePassword> {
     Repository repository = new Repository();
 
     repository.reAuthenticateUser(old).then((res) {
-
-      repository.updatePassword(newPass,res).then((result){
+      repository.updatePassword(newPass, res).then((result) {
         setState(() {
-          _loading=false;
+          _loading = false;
         });
-      }).catchError((e){
+        showAlertDialog("Success","Password successfully changed.");
+      }).catchError((e) {
         setState(() {
-          _loading=false;
+          _loading = false;
         });
+        showAlertDialog("Error","Something went wrong. Please try again later.");
       });
     }).catchError((e) {
       setState(() {
-        _loading=false;
-        oldErrorTV="Wrong password";
+        _loading = false;
+        oldErrorTV = "Wrong password";
       });
     });
+  }
 
-    //repository.updatePassword(old, newPass);
-
-
-
-//    repository.updatePassword(old, newPass).then((res){
-//      print("BLB success ${res}");
-//      setState(() {
-//        _loading=false;
-//      });
-//    }).catchError((e){
-//      print("BLB error ${e}");
-//      setState(() {
-//        _loading=false;
-//      });
-//    });
-    //repository.
+  showAlertDialog(title, body) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text(title),
+            content: Text(body),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

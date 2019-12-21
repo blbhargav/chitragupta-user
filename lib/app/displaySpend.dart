@@ -1,5 +1,5 @@
 import 'package:chitragupta/app/addTransaction.dart';
-import 'package:chitragupta/models.dart';
+import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';

@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:core';
 import 'dart:math';
 import 'package:chitragupta/main.dart';
-import 'package:chitragupta/models.dart';
+import 'package:chitragupta/models/spends_model.dart';
+import 'package:chitragupta/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
@@ -10,16 +11,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chitragupta/globals.dart' as globals;
 
 class Repository {
-  final FirebaseAuth _firebaseAuth;
+  FirebaseAuth _firebaseAuth;
   SharedPreferences prefs;
   FirebaseDatabase fbDBRef;
   static String uid = globals.UID;
-  //String mode="LIVE";
-  String mode = "TEST";
 
-  Repository({FirebaseAuth firebaseAuth, fbDBRef})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        fbDBRef = fbDBRef ?? FirebaseDatabase.instance;
+  Repository({FirebaseAuth firebaseAuth, fbDBRef}) {
+    _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    this.fbDBRef = fbDBRef ?? FirebaseDatabase.instance;
+    getUserId();
+  }
 
   Future signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
@@ -33,7 +34,15 @@ class Repository {
     );
   }
 
-  Future updatePassword(String newPassword,FirebaseUser res) async {
+  Future createUserProfile(User user) {
+    return fbDBRef
+        .reference()
+        .child("Profile")
+        .child(user.uid)
+        .set(user.toJson());
+  }
+
+  Future updatePassword(String newPassword, FirebaseUser res) async {
     final currentUser = await _firebaseAuth.currentUser();
     return currentUser.updatePassword(newPassword);
   }
@@ -87,12 +96,32 @@ class Repository {
     return uid;
   }
 
-  Future addSpend(Spend spend) {
+  Future<StreamSubscription<Event>> getUserProfile(void onData(User user)) async{
+
+    StreamSubscription<Event> subscription = fbDBRef
+        .reference()
+        .child("Profile")
+        .child(uid)
+        .onValue
+        .listen((Event event) {
+      if (event.snapshot.value != null) {
+        var user = new User.fromSnapshot(snapshot: event.snapshot);
+        onData(user);
+      } else {
+        onData(null);
+      }
+    });
+
+    return subscription;
+
+  }
+
+  Future addSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);
     String year = DateFormat('yyyy').format(spend.dateTime);
+
     return fbDBRef
         .reference()
-        .child(mode)
         .child("Spends")
         .child(uid)
         .child(year)
@@ -101,14 +130,12 @@ class Repository {
         .set(spend.toJson());
   }
 
-  Future<StreamSubscription<Event>> getRecentRecords(
-      void onData(SpendsList spendsList)) async {
+  Future<StreamSubscription<Event>> getRecentRecords(void onData(SpendsList spendsList)) async {
     String month = DateFormat('MM').format(DateTime.now());
     String year = DateFormat('yyyy').format(DateTime.now());
 
     StreamSubscription<Event> subscription = fbDBRef
         .reference()
-        .child(mode)
         .child("Spends")
         .child(uid)
         .child(year)
@@ -126,12 +153,11 @@ class Repository {
     return subscription;
   }
 
-  Future deleteSpend(Spend spend) {
+  Future deleteSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);
     String year = DateFormat('yyyy').format(spend.dateTime);
     return fbDBRef
         .reference()
-        .child(mode)
         .child("Spends")
         .child(uid)
         .child(year)
@@ -140,14 +166,14 @@ class Repository {
         .remove();
   }
 
-  Future updateSpend(Spend oldspend, Spend newSpend) {
+  Future updateSpend(Spend oldspend, Spend newSpend) async {
     if ((oldspend.dateTime.year == newSpend.dateTime.year) &&
         (oldspend.dateTime.month == newSpend.dateTime.month)) {
       String month = DateFormat('MM').format(newSpend.dateTime);
       String year = DateFormat('yyyy').format(newSpend.dateTime);
+
       return fbDBRef
           .reference()
-          .child(mode)
           .child("Spends")
           .child(uid)
           .child(year)
@@ -160,7 +186,6 @@ class Repository {
       String year = DateFormat('yyyy').format(newSpend.dateTime);
       return fbDBRef
           .reference()
-          .child(mode)
           .child("Spends")
           .child(uid)
           .child(year)

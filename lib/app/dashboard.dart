@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:chitragupta/app/addTransaction.dart';
 import 'package:chitragupta/app/displaySpend.dart';
-import 'package:chitragupta/models.dart';
+import 'package:chitragupta/models/spends_model.dart';
+import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,28 +12,48 @@ import 'package:chitragupta/globals.dart' as globals;
 import 'package:intl/intl.dart';
 
 class dashBoardScreen extends StatefulWidget {
+  dashBoardScreen({Repository repository});
+
   @override
   _dashBoardScreenState createState() => _dashBoardScreenState();
 }
 
 class _dashBoardScreenState extends State<dashBoardScreen>
     with TickerProviderStateMixin {
-  String userName = "Hi Bhargav";
-  String currency = "₹";
+  String userName = "Hi Guest";
+  String currency = "₹",noDataTV="";
   StreamSubscription _subscriptionTodo;
   List<Spend> recentSpends = new List();
   int today = 0, yesterday = 0, month = 0;
   bool _laoding = true;
-
+  Repository repository;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Repository repository = new Repository();
+    repository = new Repository();
 
     repository
         .getRecentRecords(_updateRecentSpends)
-        .then((StreamSubscription s) => _subscriptionTodo = s);
+        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){
+      setState(() {
+        _laoding=false;
+        noDataTV="No spends in this month yet";
+      });
+    });
+
+//    repository.getUserProfile().then((res){
+//      print("BLB home user $res");
+//      if(res==null) return;
+//      User user= User.fromSnapshot(snapshot: res);
+//      print("BLB home user ${user.toJson().toString()}");
+//      setState(() {
+//        userName='Hi ${user.name}';
+//      });
+//    });
+    repository
+        .getUserProfile(_updateUserName)
+        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){});
   }
 
   _updateRecentSpends(SpendsList spendsList) {
@@ -241,7 +262,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
               child: recentSpends.length <= 0
                   ? Center(
                 heightFactor: 20,
-                child: Text("No spends in this month yet"),
+                child: Text(noDataTV),
               )
                   : ListView.builder(
                 padding: EdgeInsets.all(5),
@@ -362,5 +383,11 @@ class _dashBoardScreenState extends State<dashBoardScreen>
 
   void navigateToDisplaySpend(Spend recentSpend) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => DisplaySpendScreen(recentSpend)));
+  }
+
+  void _updateUserName(User user) {
+    setState(() {
+      userName=user.name;
+    });
   }
 }
