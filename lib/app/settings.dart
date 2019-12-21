@@ -7,11 +7,16 @@ import 'package:package_info/package_info.dart';
 import '../splash_screen.dart';
 
 class Settings extends StatefulWidget {
+  Settings(Repository repository): repository = repository ?? Repository();
+  Repository repository;
   @override
-  _settingsState createState() => _settingsState();
+  _settingsState createState() => _settingsState(repository);
 }
 class _settingsState extends State<Settings>{
+  Repository repository;
   var version='1.0.0';
+
+  _settingsState(Repository repository): repository = repository ?? Repository();
   @override
   void initState() {
     // TODO: implement initState
@@ -50,7 +55,7 @@ class _settingsState extends State<Settings>{
             onTap: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Profile()),
+                MaterialPageRoute(builder: (context) => Profile(repository)),
               );
             },
           ),
@@ -59,7 +64,7 @@ class _settingsState extends State<Settings>{
             onTap: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChangePassword()),
+                MaterialPageRoute(builder: (context) => ChangePassword(repository)),
               );
             },
             child: Container(
@@ -126,7 +131,6 @@ class _settingsState extends State<Settings>{
   }
 
   Future _logout() async {
-    Repository repository=Repository();
     await repository.signOut();
     await repository.updateUserSignedLocally(false,"");
 

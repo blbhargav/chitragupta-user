@@ -6,20 +6,20 @@ import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import '../login.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  Spend spend;
-  AddTransactionScreen({this.spend});
+  Spend spend;Repository repository;
+  AddTransactionScreen(Repository repository, {this.spend}): repository = repository ?? Repository();
   @override
-  _AddTransactionScreenState createState() => _AddTransactionScreenState(oldSpend: spend);
+  _AddTransactionScreenState createState() => _AddTransactionScreenState(oldSpend: spend,repository: repository);
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Spend oldSpend;
-  _AddTransactionScreenState({this.oldSpend});
   TextEditingController _amountController = new TextEditingController();
   TextEditingController _spendController = new TextEditingController();
   TextEditingController _dateController = new TextEditingController();
@@ -34,10 +34,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool _laoding = false;
 
   final globalKey = GlobalKey<ScaffoldState>();
+
+  _AddTransactionScreenState({Spend oldSpend, Repository repository}):oldSpend=oldSpend,repository= repository ?? Repository();
   @override
   void initState() {
     super.initState();
-    repository = new Repository();
     DateTime now = DateTime.now();
     spendTime = DateFormat('dd-MM-yyyy hh:mm a').format(now);
     _dateController.text = spendTime;
@@ -45,12 +46,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     dateTime = DateTime.now();
 
     if(oldSpend!=null){
+      print("BLB old spend");
       _amountController.text="${oldSpend.amount}";
       _spendController.text=oldSpend.title;
       if(oldSpend.description.isNotEmpty)
         _descriptionController.text=oldSpend.description;
 
       spendTime=DateFormat('dd-MM-yyyy hh:mm a').format(oldSpend.dateTime);
+      _dateController.text = spendTime;
       dateTime=oldSpend.dateTime;
       time=TimeOfDay.fromDateTime(dateTime);
       selectedCat=oldSpend.category;
@@ -365,6 +368,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           },
         ),
       );
+      print(err);
       globalKey.currentState.showSnackBar(snackBar);
     });
   }
@@ -381,38 +385,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     });
   }
   void showSuccessMessage() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          Future.delayed(Duration(seconds: 3), () {
-            Navigator.of(context).pop(true);
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => homeScreen(repository)
-                ),
-                ModalRoute.withName("/Home")
-            );
-          });
-          return AlertDialog(
-            title: Text('Successfully Updated',),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok',style: TextStyle(color: Colors.green,fontSize: 18),),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => homeScreen(repository)
-                      ),
-                      ModalRoute.withName("/Home")
-                  );
-                },
-              ),
-            ],
-          );
-        });
+    Fluttertoast.showToast(msg: 'Successfully Updated');
+    Navigator.of(context).pop();
   }
   void updateSpend(BuildContext context, Spend spend) {
     showProgress();
@@ -438,6 +412,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           },
         ),
       );
+      print(err);
       globalKey.currentState.showSnackBar(snackBar);
     });
   }

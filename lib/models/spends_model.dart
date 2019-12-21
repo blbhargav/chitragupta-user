@@ -10,7 +10,7 @@ class Spend {
   DateTime dateTime;
   String description;
 
-  Spend.fromSnapshot({String key, DataSnapshot snapshot})
+  Spend.fromSnapshot(DataSnapshot snapshot)
       : key = snapshot.key,
         amount = snapshot.value['amount'],
         category = snapshot.value['category'],

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:chitragupta/app/addTransaction.dart';
 import 'package:chitragupta/models/spends_model.dart';
+import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
@@ -8,17 +11,37 @@ import 'package:intl/intl.dart';
 
 class DisplaySpendScreen extends StatefulWidget {
   Spend spend;
-  DisplaySpendScreen(Spend spend) : this.spend = spend;
+  Repository repository;
+  DisplaySpendScreen(Spend spend, Repository repository) : this.spend = spend,repository = repository ?? Repository();
 
   @override
-  _DisplaySpendState createState() => new _DisplaySpendState(spend);
+  _DisplaySpendState createState() => new _DisplaySpendState(spend,repository);
 }
 
 class _DisplaySpendState extends State<DisplaySpendScreen> {
   bool _loading = false;
   Spend spend;
+  Repository repository;
+  StreamSubscription _subscriptionTodo;
+  _DisplaySpendState(Spend spend, Repository repository) : this.spend = spend,repository = repository ?? Repository();
 
-  _DisplaySpendState(Spend spend) : this.spend = spend;
+  @override
+  void initState() {
+    super.initState();
+
+    repository
+        .getSpendRecord(spend,_updateSpend)
+        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){});
+  }
+
+  @override
+  void dispose() {
+    if (_subscriptionTodo != null) {
+      _subscriptionTodo.cancel();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ProgressHUD(
@@ -159,7 +182,6 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
   }
 
   void deleteSpend() {
-    Repository repository = new Repository();
     setState(() {
       _loading = true;
     });
@@ -207,8 +229,17 @@ class _DisplaySpendState extends State<DisplaySpendScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddTransactionScreen(
-                  spend: spend,
+            builder: (context) => AddTransactionScreen(repository,
+                  spend: spend
                 )));
+  }
+
+
+
+
+  void _updateSpend(Spend spend) {
+    setState(() {
+      this.spend=spend;
+    });
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:math';
+import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/main.dart';
 import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/models/user.dart';
@@ -153,6 +154,33 @@ class Repository {
     return subscription;
   }
 
+  Future<StreamSubscription<Event>> getSpendRecord(Spend payload,void onData(Spend spend)) async {
+
+    String month = DateFormat('MM').format(payload.dateTime);
+    String year = DateFormat('yyyy').format(payload.dateTime);
+
+    StreamSubscription<Event> subscription = fbDBRef
+        .reference()
+        .child("Spends")
+        .child(uid)
+        .child(year)
+        .child(month).child(payload.key)
+        .onValue
+        .listen((Event event) {
+      if (event.snapshot.value != null) {
+        print("BLB no observable spend ${event.snapshot.key}");
+        var spends = new Spend.fromSnapshot(event.snapshot);
+
+        onData(spends);
+      } else {
+        onData(null);
+
+      }
+    });
+
+    return subscription;
+  }
+
   Future deleteSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);
     String year = DateFormat('yyyy').format(spend.dateTime);
@@ -166,9 +194,9 @@ class Repository {
         .remove();
   }
 
-  Future updateSpend(Spend oldspend, Spend newSpend) async {
-    if ((oldspend.dateTime.year == newSpend.dateTime.year) &&
-        (oldspend.dateTime.month == newSpend.dateTime.month)) {
+  Future updateSpend(Spend oldSpend, Spend newSpend) async {
+    if ((oldSpend.dateTime.year == newSpend.dateTime.year) &&
+        (oldSpend.dateTime.month == newSpend.dateTime.month)) {
       String month = DateFormat('MM').format(newSpend.dateTime);
       String year = DateFormat('yyyy').format(newSpend.dateTime);
 
@@ -178,10 +206,10 @@ class Repository {
           .child(uid)
           .child(year)
           .child(month)
-          .child(oldspend.key)
-          .set(newSpend);
+          .child(oldSpend.key)
+          .set(newSpend.toJson());
     } else {
-      deleteSpend(oldspend);
+      deleteSpend(oldSpend);
       String month = DateFormat('MM').format(newSpend.dateTime);
       String year = DateFormat('yyyy').format(newSpend.dateTime);
       return fbDBRef
@@ -190,8 +218,8 @@ class Repository {
           .child(uid)
           .child(year)
           .child(month)
-          .child(oldspend.key)
-          .set(newSpend);
+          .child(oldSpend.key)
+          .set(newSpend.toJson());
     }
   }
 }

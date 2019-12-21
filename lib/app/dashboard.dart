@@ -360,7 +360,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   void addTransactionPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddTransactionScreen()),
+      MaterialPageRoute(builder: (context) => AddTransactionScreen(repository)),
     );
   }
 
@@ -373,7 +373,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   }
 
   void navigateToDisplaySpend(Spend recentSpend) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => DisplaySpendScreen(recentSpend)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => DisplaySpendScreen(recentSpend,repository)));
   }
 
   void _updateUserName(User user) {

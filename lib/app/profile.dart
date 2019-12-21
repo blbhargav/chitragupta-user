@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class Profile extends StatefulWidget {
+  Profile(Repository repository):repository=repository??Repository();
+  Repository repository;
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileState createState() => _ProfileState(repository);
 }
 
 class _ProfileState extends State<Profile> {
@@ -20,11 +22,12 @@ class _ProfileState extends State<Profile> {
   bool _laoding=true;
   User user;
   StreamSubscription _subscriptionTodo;
+
+  _ProfileState(Repository repository):repository=repository??Repository();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    repository=Repository();
 
     repository
         .getUserProfile(_updateUserName)

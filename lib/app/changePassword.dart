@@ -8,11 +8,14 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../login.dart';
 
 class ChangePassword extends StatefulWidget {
+  ChangePassword(Repository repository): repository = repository ?? Repository();
+  Repository repository;
   @override
-  _ChangePasswordState createState() => _ChangePasswordState();
+  _ChangePasswordState createState() => _ChangePasswordState(repository);
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
+  Repository repository;
   List<Color> saveGradient = [
     Color(0xFF0EDED2),
     Color(0xFF03A0FE),
@@ -24,6 +27,8 @@ class _ChangePasswordState extends State<ChangePassword> {
   TextEditingController _oldController = new TextEditingController();
   TextEditingController _newController = new TextEditingController();
   TextEditingController _confirmController = new TextEditingController();
+
+  _ChangePasswordState(Repository repository): repository = repository ?? Repository();
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +178,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     setState(() {
       _loading = true;
     });
-    Repository repository = new Repository();
 
     repository.reAuthenticateUser(old).then((res) {
       repository.updatePassword(newPass, res).then((result) {

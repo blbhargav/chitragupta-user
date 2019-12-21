@@ -35,7 +35,7 @@ class _homeScreenState extends State<homeScreen> with TickerProviderStateMixin {
                 ? Spends(repository)
                 : (_selectedIndex == 2
                     ? Analytics(repository)
-                    : (_selectedIndex == 3 ? Settings() : Container()))),
+                    : (_selectedIndex == 3 ? Settings(repository) : Container()))),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.lightBlue[900],
           items: const <BottomNavigationBarItem>[
