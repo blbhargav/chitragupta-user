@@ -154,7 +154,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ),
                     Text("Category *"),
                     if (categoryErrorTV != null && categoryErrorTV.length > 0)
-                      Text(categoryErrorTV)
+                      Text(categoryErrorTV,style: TextStyle(color: Colors.red),)
                   ],
                 ),
                 Padding(

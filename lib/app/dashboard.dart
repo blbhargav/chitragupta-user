@@ -260,9 +260,10 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                 scrollDirection: Axis.vertical,
                 itemCount: recentSpends.length,
                 itemBuilder: (BuildContext context, int index) {
+                  bool last = recentSpends.length == (index + 1);
                   return InkWell(
                     child: Container(
-                      padding: EdgeInsets.all(5),
+                      padding:last? EdgeInsets.only(left: 5,right: 5,top: 5,bottom: 100):EdgeInsets.all(5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

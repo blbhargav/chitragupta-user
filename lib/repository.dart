@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:ffi';
 import 'dart:math';
 import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/main.dart';
@@ -172,9 +173,18 @@ class Repository {
         List<SpendsList> spendList=new List();
 
         var keys=event.snapshot.value.keys;
-        for(final key in keys){
+        List<dynamic> keyStrings=keys.toList();
+        keyStrings.sort((a, b) => a.compareTo(b));
+
+
+        for(final key in keyStrings){
           months.add(int.parse(key));
           var spends = new SpendsList.fromJson(event.snapshot.value[key]);
+          spends.spendList.sort((a, b) {
+            var adate = a.dateTime;
+            var bdate = b.dateTime;
+            return adate.compareTo(bdate);
+          });
           spendList.add(spends);
         }
 
