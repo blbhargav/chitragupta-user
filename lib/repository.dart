@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 import 'package:chitragupta/app/spends.dart';
@@ -148,6 +149,38 @@ class Repository {
         onData(spends);
       } else {
         onData(null);
+      }
+    });
+
+    return subscription;
+  }
+
+  Future<StreamSubscription<Event>> getYearlyRecords(DateTime dateTime,void onData(List<int> months,List<SpendsList> spendList)) async {
+    //String month = DateFormat('MM').format(DateTime.now());
+    String year = DateFormat('yyyy').format(dateTime);
+
+    StreamSubscription<Event> subscription = fbDBRef
+        .reference()
+        .child("Spends")
+        .child(uid)
+        .child(year)
+        .onValue
+        .listen((Event event) {
+      if (event.snapshot.value != null) {
+
+        List<int> months=new List();
+        List<SpendsList> spendList=new List();
+
+        var keys=event.snapshot.value.keys;
+        for(final key in keys){
+          months.add(int.parse(key));
+          var spends = new SpendsList.fromJson(event.snapshot.value[key]);
+          spendList.add(spends);
+        }
+
+        onData(months,spendList);
+      } else {
+        onData(null,null);
       }
     });
 

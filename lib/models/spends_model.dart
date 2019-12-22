@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 
@@ -38,7 +40,6 @@ class Spend {
 
   static fromSnapshotToList(DataSnapshot snapshot) {
     List<Spend> spendList = [];
-    print(snapshot.key);
     Map<dynamic, dynamic> spends = snapshot.value;
     spends.forEach((key, value) {
       Spend spend = Spend.fromJson(value);
@@ -55,4 +56,13 @@ class SpendsList {
   SpendsList({this.spendList});
   SpendsList.fromSnapshot(DataSnapshot snapshot)
       : spendList = Spend.fromSnapshotToList(snapshot);
+
+  SpendsList.fromJson(var jsonString){
+    spendList=List();
+    var keys=jsonString.keys;
+    for(final key in keys){
+      spendList.add(Spend.fromJson(jsonString[key]));
+    }
+  }
+
 }
