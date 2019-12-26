@@ -94,7 +94,7 @@ class _spendsState extends State<Spends> {
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic),
                       ),
-                      initiallyExpanded: i==months.length-1,
+                      initiallyExpanded: i==(months.length-1),
                       children: <Widget>[
                         new Column(
                           children: _buildExpandableContent(yearlySpends[i]),
@@ -131,8 +131,10 @@ class _spendsState extends State<Spends> {
                     Navigator.of(context).pop();
                     setState(() {
                       year=value;
+                      title = "Spends - $year";
                     });
                     groupValue=value;
+                    refreshData();
                   },
                   activeColor: Colors.lightBlue[900],
                 );
@@ -145,8 +147,7 @@ class _spendsState extends State<Spends> {
   }
 
   void _updateRecords(List<int> months, List<SpendsList> spendList) {
-    print(months);
-    print(spendList);
+    yearlySpends.clear();
     setState(() {
       _laoding = false;
       if (months != null) {
@@ -269,5 +270,20 @@ class _spendsState extends State<Spends> {
         context,
         MaterialPageRoute(
             builder: (context) => DisplaySpendScreen(recentSpend, repository)));
+  }
+
+  void refreshData() {
+    if (_subscriptionTodo != null) {
+      _subscriptionTodo.cancel();
+    }
+
+    repository
+        .getYearlyRecords(year, _updateRecords)
+        .then((StreamSubscription s) => _subscriptionTodo = s)
+        .catchError((err) {
+      setState(() {
+        _laoding = false;
+      });
+    });
   }
 }
