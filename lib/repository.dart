@@ -12,6 +12,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chitragupta/globals.dart' as globals;
+import 'package:http/http.dart' as http;
 
 class Repository {
   FirebaseAuth _firebaseAuth;
@@ -156,9 +157,7 @@ class Repository {
     return subscription;
   }
 
-  Future<StreamSubscription<Event>> getYearlyRecords(DateTime dateTime,void onData(List<int> months,List<SpendsList> spendList)) async {
-    //String month = DateFormat('MM').format(DateTime.now());
-    String year = DateFormat('yyyy').format(dateTime);
+  Future<StreamSubscription<Event>> getYearlyRecords(String year,void onData(List<int> months,List<SpendsList> spendList)) async {
 
     StreamSubscription<Event> subscription = fbDBRef
         .reference()
@@ -197,6 +196,8 @@ class Repository {
     return subscription;
   }
 
+
+
   Future<StreamSubscription<Event>> getSpendRecord(Spend payload,void onData(Spend spend)) async {
 
     String month = DateFormat('MM').format(payload.dateTime);
@@ -222,6 +223,10 @@ class Repository {
     });
 
     return subscription;
+  }
+
+  Future getSpendYears(){
+    return http.get('https://chitragupta-007.firebaseio.com/Spends/$uid.json?shallow=true');
   }
 
   Future deleteSpend(Spend spend) async {

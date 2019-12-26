@@ -13,7 +13,8 @@ import 'package:intl/intl.dart';
 
 class dashBoardScreen extends StatefulWidget {
   Repository repository;
-  dashBoardScreen(Repository repository):repository=repository??Repository();
+  dashBoardScreen(Repository repository)
+      : repository = repository ?? Repository();
 
   @override
   _dashBoardScreenState createState() => _dashBoardScreenState(repository);
@@ -21,10 +22,11 @@ class dashBoardScreen extends StatefulWidget {
 
 class _dashBoardScreenState extends State<dashBoardScreen>
     with TickerProviderStateMixin {
-  _dashBoardScreenState(Repository repository):repository=repository??Repository();
+  _dashBoardScreenState(Repository repository)
+      : repository = repository ?? Repository();
 
   String userName = "Hi Guest";
-  String currency = "₹",noDataTV="";
+  String currency = "₹", noDataTV = "";
   StreamSubscription _subscriptionTodo;
   List<Spend> recentSpends = new List();
   int today = 0, yesterday = 0, month = 0;
@@ -35,22 +37,24 @@ class _dashBoardScreenState extends State<dashBoardScreen>
     super.initState();
     repository
         .getRecentRecords(_updateRecentSpends)
-        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){
+        .then((StreamSubscription s) => _subscriptionTodo = s)
+        .catchError((err) {
       setState(() {
-        _laoding=false;
-        noDataTV="No spends in this month yet";
+        _laoding = false;
+        noDataTV = "No spends in this month yet";
       });
     });
 
     repository
         .getUserProfile(_updateUserName)
-        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){});
+        .then((StreamSubscription s) => _subscriptionTodo = s)
+        .catchError((err) {});
   }
 
   _updateRecentSpends(SpendsList spendsList) {
-    if(spendsList==null){
+    if (spendsList == null) {
       setState(() {
-        _laoding=false;
+        _laoding = false;
       });
       return;
     }
@@ -92,120 +96,73 @@ class _dashBoardScreenState extends State<dashBoardScreen>
       today = tempToday;
       yesterday = tempYesterday;
       month = tempMonth;
-      _laoding=false;
+      _laoding = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ProgressHUD(child: Scaffold(
-      body: Column(
-        children: <Widget>[
-
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                // Box decoration takes a gradient
-                gradient: LinearGradient(
-                  // Where the linear gradient begins and ends
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  // Add one stop for each color. Stops should increase from 0 to 1
-                  stops: [0.1, 0.5, 0.7, 0.9],
-                  colors: [
-                    // Colors are easy thanks to Flutter's Colors class.
-                    Colors.lightBlue[900],
-                    Colors.lightBlue[900],
-                    Colors.lightBlue[900],
-                    Colors.lightBlue[900],
-                  ],
-                ),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Padding(padding: EdgeInsets.only(top: 10),child: Text(
-                        userName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,),
-                      ),),
-                    ),
-                    flex: 4,
+    return ProgressHUD(
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  // Box decoration takes a gradient
+                  gradient: LinearGradient(
+                    // Where the linear gradient begins and ends
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    // Add one stop for each color. Stops should increase from 0 to 1
+                    stops: [0.1, 0.5, 0.7, 0.9],
+                    colors: [
+                      // Colors are easy thanks to Flutter's Colors class.
+                      Colors.lightBlue[900],
+                      Colors.lightBlue[900],
+                      Colors.lightBlue[900],
+                      Colors.lightBlue[900],
+                    ],
                   ),
-
-                  Expanded(
-                    child: Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text("Month",
-                                      style: TextStyle(color: Colors.white)),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text("₹ ${month}",
-                                      style: TextStyle(color: Colors.white)),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                ],
-                              ),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Text(
+                            userName,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
                             ),
                           ),
-
-                          Expanded(
-                            flex: 6,
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-
-                                  Text(
-                                    "Today",
-                                    style:
-                                    TextStyle(fontSize: 20, color: Colors.white),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text("₹ ${today}",
-                                      style: TextStyle(
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              child: Align(
-                                alignment: FractionalOffset.bottomCenter,
+                        ),
+                      ),
+                      flex: 4,
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 2,
+                              child: Container(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                    Text(
-                                      "Yesterday",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
+                                    Text("Month",
+                                        style: TextStyle(color: Colors.white)),
                                     Padding(
                                       padding: EdgeInsets.all(5),
                                     ),
-                                    Text("₹ ${yesterday}",
+                                    Text("₹ ${month}",
                                         style: TextStyle(color: Colors.white)),
                                     Padding(
                                       padding: EdgeInsets.all(5),
@@ -214,18 +171,65 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                 ),
                               ),
                             ),
-                          ),
-
-                        ],
+                            Expanded(
+                              flex: 6,
+                              child: Container(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "Today",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(5),
+                                    ),
+                                    Text("₹ ${today}",
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: Align(
+                                  alignment: FractionalOffset.bottomCenter,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Text(
+                                        "Yesterday",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(5),
+                                      ),
+                                      Text("₹ ${yesterday}",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      Padding(
+                                        padding: EdgeInsets.all(5),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    flex: 6,
-                  )
-                ],
+                      flex: 6,
+                    )
+                  ],
+                ),
               ),
+              flex: 3,
             ),
-            flex: 3,
-          ),
 
 //          Expanded(
 //            child:  Container(
@@ -239,123 +243,138 @@ class _dashBoardScreenState extends State<dashBoardScreen>
 //            flex: 1,
 //          ),
 
-          Container(
-            alignment: FractionalOffset.bottomCenter,
-            padding: EdgeInsets.only(top: 20,bottom: 8),
-            child: Text(
-              "Recent Spends This Month",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue,fontSize: 18),
-            ),
-          ),
-
-          Expanded(
-            child: Container(
-              child: recentSpends.length <= 0
-                  ? Center(
-                heightFactor: 20,
-                child: Text(noDataTV),
-              )
-                  : ListView.builder(
-                padding: EdgeInsets.all(5),
-                scrollDirection: Axis.vertical,
-                itemCount: recentSpends.length,
-                itemBuilder: (BuildContext context, int index) {
-                  bool last = recentSpends.length == (index + 1);
-                  return InkWell(
-                    child: Container(
-                      padding:last? EdgeInsets.only(left: 5,right: 5,top: 5,bottom: 100):EdgeInsets.all(5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              PhysicalModel(
-                                borderRadius:
-                                new BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                child: new Container(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  decoration: new BoxDecoration(
-                                    borderRadius:
-                                    new BorderRadius.circular(25.0),
-                                    border: new Border.all(
-                                      width: 1.0,
-                                      color: Colors.cyan,
-                                    ),
-                                  ),
-                                  child: Icon(getIcon(
-                                      recentSpends[index].category)),
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.all(5),),
-                              Expanded(
-                                flex: 6,
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      recentSpends[index].title,
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 5),
-                                    ),
-                                    Text("#${recentSpends[index].category}",style: TextStyle(fontStyle: FontStyle.italic),),
-
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 5),
-                                    ),
-                                    Text(
-                                      DateFormat('dd-MMM-yyyy hh:mm a').format(
-                                          recentSpends[index].dateTime),
-                                      style: TextStyle(color: Colors.black45),
-                                    )
-                                  ],
-                                ),
-                              ),
-
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  "₹ ${recentSpends[index].amount}",
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 18),
-                                ),
-                              )
-                            ],
-                          ),
-                          new Divider(
-                            color: Colors.black12,
-                          )
-                        ],
-                      ),
-                    ),
-                    onTap: (){
-                      navigateToDisplaySpend(recentSpends[index]);
-                    },
-                    onDoubleTap: (){
-                      navigateToDisplaySpend(recentSpends[index]);
-                    },
-                  );
-                },
+            Container(
+              alignment: FractionalOffset.bottomCenter,
+              padding: EdgeInsets.only(top: 20, bottom: 8),
+              child: Text(
+                "Recent Spends This Month",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                    fontSize: 18),
               ),
             ),
-            flex: 6,
-          ),
 
-
-
-        ],
+            Expanded(
+              child: Container(
+                child: recentSpends.length <= 0
+                    ? Center(
+                        heightFactor: 20,
+                        child: Text(noDataTV),
+                      )
+                    : ListView.builder(
+                        padding: EdgeInsets.all(5),
+                        scrollDirection: Axis.vertical,
+                        itemCount: recentSpends.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          bool last = recentSpends.length == (index + 1);
+                          return InkWell(
+                            child: Container(
+                              padding: last
+                                  ? EdgeInsets.only(
+                                      left: 5, right: 5, top: 5, bottom: 100)
+                                  : EdgeInsets.all(5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      PhysicalModel(
+                                        borderRadius:
+                                            new BorderRadius.circular(25.0),
+                                        color: Colors.white,
+                                        child: new Container(
+                                          width: 50.0,
+                                          height: 50.0,
+                                          decoration: new BoxDecoration(
+                                            borderRadius:
+                                                new BorderRadius.circular(25.0),
+                                            border: new Border.all(
+                                              width: 1.0,
+                                              color: Colors.cyan,
+                                            ),
+                                          ),
+                                          child: Icon(getIcon(
+                                              recentSpends[index].category)),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(5),
+                                      ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              recentSpends[index].title,
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 5),
+                                            ),
+                                            Text(
+                                              "#${recentSpends[index].category}",
+                                              style: TextStyle(
+                                                  fontStyle: FontStyle.italic),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 5),
+                                            ),
+                                            Text(
+                                              DateFormat('dd-MMM-yyyy hh:mm a')
+                                                  .format(recentSpends[index]
+                                                      .dateTime),
+                                              style: TextStyle(
+                                                  color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          "₹ ${recentSpends[index].amount}",
+                                          textAlign: TextAlign.end,
+                                          style: TextStyle(
+                                              color: Colors.blueAccent,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  new Divider(
+                                    color: Colors.black12,
+                                  )
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              navigateToDisplaySpend(recentSpends[index]);
+                            },
+                            onDoubleTap: () {
+                              navigateToDisplaySpend(recentSpends[index]);
+                            },
+                          );
+                        },
+                      ),
+              ),
+              flex: 6,
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            addTransactionPage();
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          addTransactionPage();
-        },
-      ),
-    ), inAsyncCall: _laoding,opacity: 0.3,);
+      inAsyncCall: _laoding,
+      opacity: 0.3,
+    );
   }
 
   void addTransactionPage() {
@@ -374,12 +393,15 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   }
 
   void navigateToDisplaySpend(Spend recentSpend) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => DisplaySpendScreen(recentSpend,repository)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DisplaySpendScreen(recentSpend, repository)));
   }
 
   void _updateUserName(User user) {
     setState(() {
-      userName="Hi ${user.name}";
+      userName = "Hi ${user.name}";
     });
   }
 }

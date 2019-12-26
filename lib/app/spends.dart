@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:chitragupta/app/addTransaction.dart';
@@ -22,24 +23,37 @@ class _spendsState extends State<Spends> {
   Repository repository;
   StreamSubscription _subscriptionTodo;
   _spendsState(Repository repository) : repository = repository ?? Repository();
-  DateTime dateTime;
+
   List<SpendsList> yearlySpends = new List();
   List<int> months = new List();
   String noDataTV = "", title = "Spends";
+  var groupValue="",year;
+
+  List<String> years=new List();
 
   @override
   void initState() {
     super.initState();
-    dateTime = DateTime.now();
-    String year = DateFormat('yyyy').format(dateTime);
+    DateTime dateTime = DateTime.now();
+    year = DateFormat('yyyy').format(dateTime);
     title = "Spends - $year";
     repository
-        .getYearlyRecords(dateTime, _updateRecords)
+        .getYearlyRecords(year, _updateRecords)
         .then((StreamSubscription s) => _subscriptionTodo = s)
         .catchError((err) {
       setState(() {
         _laoding = false;
       });
+    });
+    years.add(DateFormat('yyyy').format(DateTime.now()));
+    groupValue=DateFormat('yyyy').format(DateTime.now());
+
+    repository.getSpendYears().then((res){
+      years.clear();
+      Map<String, dynamic> decoded = json.decode(res.body);
+      for (var colour in decoded.keys) {
+        years.add(colour);
+      }
     });
   }
 
@@ -94,9 +108,39 @@ class _spendsState extends State<Spends> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.filter_list),
         onPressed: () {
-          //addTransactionPage();
+          _yearsBottomSheet(context);
         },
       ),
+    );
+  }
+
+  void _yearsBottomSheet(context){
+    showModalBottomSheet(
+        context: context,elevation: 2,
+        builder: (BuildContext bc){
+          return Container(
+            height: MediaQuery.of(context).size.height/2,
+            child: new ListView.builder(
+              itemCount: years.length,
+              itemBuilder: (BuildContext context, int index) {
+                return RadioListTile(
+                  title: new Text("${years[index]}"),
+                  value: years[index],
+                  groupValue: groupValue,
+                  onChanged: (value){
+                    Navigator.of(context).pop();
+                    setState(() {
+                      year=value;
+                    });
+                    groupValue=value;
+                  },
+                  activeColor: Colors.lightBlue[900],
+                );
+              },
+
+            ),
+          );
+        }
     );
   }
 
