@@ -54,6 +54,7 @@ class _spendsState extends State<Spends> {
       for (var colour in decoded.keys) {
         years.add(colour);
       }
+      years=years.reversed.toList();
     });
   }
 

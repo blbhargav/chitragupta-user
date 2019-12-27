@@ -21,12 +21,25 @@ class _analyticsState extends State<Analytics>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Spends"),backgroundColor: Colors.lightBlue[900],centerTitle: true,
-      ),
-      body: Center(
-        child: Text("Analytics"),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.attach_money)),
+              Tab(icon: Icon(Icons.pie_chart))
+            ],
+          ),
+          title: Text('Analytics Spends',textAlign: TextAlign.center,),
+          backgroundColor: Colors.lightBlue[900],
+        ),
+        body: TabBarView(
+          children: [
+            Container(),
+            Container(),
+          ],
+        ),
       ),
     );
   }
