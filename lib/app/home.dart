@@ -24,6 +24,12 @@ class _homeScreenState extends State<homeScreen> with TickerProviderStateMixin {
   Repository repository;
 
   @override
+  void initState() {
+    super.initState();
+    repository.getUserId();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       child: Scaffold(

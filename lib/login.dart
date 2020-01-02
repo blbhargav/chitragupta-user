@@ -6,6 +6,7 @@ import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class loginRoot extends StatefulWidget {
   @override
@@ -187,14 +188,15 @@ class _Login extends State<Login> {
       setState(() {
         _loading = true;
       });
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
       repository
           .signInWithCredentials(
               _userIdController.text, _passwordController.text)
-          .then((res) {
+          .then((res) async {
         setState(() {
           _loading = false;
         });
-        repository.updateUserSignedLocally(true,res.uid);
+        await repository.updateUserSignedLocally(true,res.uid);
         navigateToHome();
       }).catchError((e) {
         print("BLB login $e");
