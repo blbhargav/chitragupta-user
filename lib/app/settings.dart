@@ -1,3 +1,4 @@
+import 'package:chitragupta/app/about.dart';
 import 'package:chitragupta/app/changePassword.dart';
 import 'package:chitragupta/app/profile.dart';
 import 'package:chitragupta/repository.dart';
@@ -83,7 +84,12 @@ class _settingsState extends State<Settings>{
           ),
 
           InkWell(
-            onTap: (){},
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboutUs()),
+              );
+            },
             child: Container(
               padding: EdgeInsets.only(left: 10,right: 10,top: 10),
               margin: EdgeInsets.only(left: 5,right: 5),
