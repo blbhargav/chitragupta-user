@@ -23,6 +23,7 @@ class Repository {
   Repository({FirebaseAuth firebaseAuth, fbDBRef}) {
     _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
     this.fbDBRef = fbDBRef ?? FirebaseDatabase.instance;
+    this.fbDBRef.setPersistenceEnabled(true);
     getUserId();
   }
 
@@ -100,14 +101,14 @@ class Repository {
     return uid;
   }
 
-  Future<StreamSubscription<Event>> getUserProfile(void onData(User user)) async{
+  Future<StreamSubscription<Event>> getUserProfile(
+      void onData(User user)) async {
+    DatabaseReference profileReference =
+        fbDBRef.reference().child("Profile").child(uid);
+    profileReference.keepSynced(true);
 
-    StreamSubscription<Event> subscription = fbDBRef
-        .reference()
-        .child("Profile")
-        .child(uid)
-        .onValue
-        .listen((Event event) {
+    StreamSubscription<Event> subscription =
+        profileReference.onValue.listen((Event event) {
       if (event.snapshot.value != null) {
         var user = new User.fromSnapshot(snapshot: event.snapshot);
         onData(user);
@@ -117,35 +118,30 @@ class Repository {
     });
 
     return subscription;
-
   }
 
   Future addSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);
     String year = DateFormat('yyyy').format(spend.dateTime);
+    DatabaseReference spendRef =
+        fbDBRef.reference().child("Spends").child(uid).child(year).child(month);
+    spendRef.keepSynced(true);
 
-    return fbDBRef
-        .reference()
-        .child("Spends")
-        .child(uid)
-        .child(year)
-        .child(month)
-        .push()
-        .set(spend.toJson());
+    return spendRef.push().set(spend.toJson());
   }
 
-  Future<StreamSubscription<Event>> getRecentRecords(void onData(SpendsList spendsList)) async {
+  Future<StreamSubscription<Event>> getRecentRecords(
+      void onData(SpendsList spendsList)) async {
     String month = DateFormat('MM').format(DateTime.now());
     String year = DateFormat('yyyy').format(DateTime.now());
 
-    StreamSubscription<Event> subscription = fbDBRef
-        .reference()
-        .child("Spends")
-        .child(uid)
-        .child(year)
-        .child(month)
-        .onValue
-        .listen((Event event) {
+    DatabaseReference spendsRef =
+        fbDBRef.reference().child("Spends").child(uid).child(year).child(month);
+
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+        spendsRef.onValue.listen((Event event) {
       if (event.snapshot.value != null) {
         var spends = new SpendsList.fromSnapshot(event.snapshot);
         onData(spends);
@@ -157,60 +153,22 @@ class Repository {
     return subscription;
   }
 
-  Future<StreamSubscription<Event>> getYearlyRecords(String year,void onData(List<int> months,List<SpendsList> spendList)) async {
-
-    StreamSubscription<Event> subscription = fbDBRef
-        .reference()
-        .child("Spends")
-        .child(uid)
-        .child(year)
-        .onValue
-        .listen((Event event) {
-      if (event.snapshot.value != null) {
-
-        List<int> months=new List();
-        List<SpendsList> spendList=new List();
-
-        var keys=event.snapshot.value.keys;
-        List<dynamic> keyStrings=keys.toList();
-        keyStrings.sort((a, b) => a.compareTo(b));
-
-
-        for(final key in keyStrings){
-          months.add(int.parse(key));
-          var spends = new SpendsList.fromJson(event.snapshot.value[key]);
-          spends.spendList.sort((a, b) {
-            var adate = a.dateTime;
-            var bdate = b.dateTime;
-            return adate.compareTo(bdate);
-          });
-          spendList.add(spends);
-        }
-
-        onData(months,spendList);
-      } else {
-        onData(null,null);
-      }
-    });
-
-    return subscription;
-  }
-
-
-
-  Future<StreamSubscription<Event>> getSpendRecord(Spend payload,void onData(Spend spend)) async {
-
+  Future<StreamSubscription<Event>> getSpendRecord(
+      Spend payload, void onData(Spend spend)) async {
     String month = DateFormat('MM').format(payload.dateTime);
     String year = DateFormat('yyyy').format(payload.dateTime);
 
-    StreamSubscription<Event> subscription = fbDBRef
+    DatabaseReference spendsRef = fbDBRef
         .reference()
         .child("Spends")
         .child(uid)
         .child(year)
-        .child(month).child(payload.key)
-        .onValue
-        .listen((Event event) {
+        .child(month)
+        .child(payload.key);
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+        spendsRef.onValue.listen((Event event) {
       if (event.snapshot.value != null) {
         print("BLB no observable spend ${event.snapshot.key}");
         var spends = new Spend.fromSnapshot(event.snapshot);
@@ -218,15 +176,15 @@ class Repository {
         onData(spends);
       } else {
         onData(null);
-
       }
     });
 
     return subscription;
   }
 
-  Future getSpendYears(){
-    return http.get('https://chitragupta-007.firebaseio.com/Spends/$uid.json?shallow=true');
+  Future getSpendYears() {
+    return http.get(
+        'https://chitragupta-007.firebaseio.com/Spends/$uid.json?shallow=true');
   }
 
   Future deleteSpend(Spend spend) async {
@@ -269,5 +227,73 @@ class Repository {
           .child(oldSpend.key)
           .set(newSpend.toJson());
     }
+  }
+
+  Future<StreamSubscription<Event>> getYearlyRecords(String year,
+      void onData(List<int> months, List<SpendsList> spendList)) async {
+    DatabaseReference spendsRef =
+        fbDBRef.reference().child("Spends").child(uid).child(year);
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+        spendsRef.onValue.listen((Event event) {
+      if (event.snapshot.value != null) {
+        List<int> months = new List();
+        List<SpendsList> spendList = new List();
+
+        var keys = event.snapshot.value.keys;
+        List<dynamic> keyStrings = keys.toList();
+        keyStrings.sort((a, b) => a.compareTo(b));
+
+        for (final key in keyStrings) {
+          months.add(int.parse(key));
+          var spends = new SpendsList.fromJson(event.snapshot.value[key]);
+          spends.spendList.sort((a, b) {
+            var adate = a.dateTime;
+            var bdate = b.dateTime;
+            return adate.compareTo(bdate);
+          });
+          spendList.add(spends);
+        }
+
+        onData(months, spendList);
+      } else {
+        onData(null, null);
+      }
+    });
+
+    return subscription;
+  }
+
+  Future<StreamSubscription<Event>> getAllSpendRecords(
+      void onData(List<Spend> spend)) async {
+    DatabaseReference spendsRef =
+        fbDBRef.reference().child("Spends").child(uid);
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+        spendsRef.onValue.listen((Event event) {
+      if (event.snapshot.value != null) {
+        List<Spend> spendList = new List();
+
+        var yearKeys = event.snapshot.value.keys;
+        for (final year in yearKeys) {
+          var monthKeys = event.snapshot.value[year].keys;
+          for (final key in monthKeys) {
+            var spends =
+                new SpendsList.fromJson(event.snapshot.value[year][key]);
+            for (var spend in spends.spendList) {
+              spendList.add(spend);
+            }
+          }
+        }
+
+        onData(spendList);
+      } else {
+        onData(null);
+      }
+    });
+
+    return subscription;
   }
 }
