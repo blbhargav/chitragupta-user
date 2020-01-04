@@ -24,17 +24,23 @@ class AboutUs extends StatelessWidget {
           ),
           Text(
             "Chitragupta is a expenditure tracker for students. This is a private project and not for business purpose. Since this project runs on free tier plan, the number of users are limited.",
-            style: TextStyle(fontSize: 18,),textAlign: TextAlign.justify,
+            style: TextStyle(
+              fontSize: 18,
+            ),
+            textAlign: TextAlign.start,
           ),
           Padding(
             padding: EdgeInsets.all(5),
           ),
           Text(
-              "'There is always a room for development'. Since this project is a baby, we welcome your inputs.",style: TextStyle(fontSize: 18),textAlign: TextAlign.justify),
+              "'There is always a room for development'. Since this project is a baby, we welcome your inputs.",
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.start),
           Padding(
             padding: EdgeInsets.all(5),
           ),
-          Text("Incase of suggestion or problem, you knew whom to right 😉.",style: TextStyle(fontSize: 18),textAlign: TextAlign.justify),
+          Text("Incase of suggestion or problem, you knew whom to poke 😉.",
+              style: TextStyle(fontSize: 18), textAlign: TextAlign.start),
         ],
       ),
     );

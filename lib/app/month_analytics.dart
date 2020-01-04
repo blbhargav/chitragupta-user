@@ -7,13 +7,12 @@ import 'package:chitragupta/repository.dart';
 import 'package:chitragupta/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chitragupta/app/analytics.dart';
 import 'package:intl/intl.dart';
 
 class MonthAnalytics extends StatefulWidget {
   MonthAnalytics(Repository repository)
       : repository = repository ?? Repository();
-  Repository repository;
+  final Repository repository;
   @override
   _MonthAnalyticsState createState() => _MonthAnalyticsState(repository);
 }
@@ -35,15 +34,7 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
   int monthTotal;
   List<Spend> monthSpends;
   bool _loading;
-  int food,
-      entertainment,
-      travel,
-      snacks,
-      fuel,
-      bills,
-      shopping,
-      health,
-      others;
+
   StreamSubscription _subscriptionTodo;
   var todayDate = new DateTime.now();
   var weekDate = DateTime.now().subtract(new Duration(days: 6));
@@ -57,10 +48,6 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
     todaySpends = new List();
     weekSpends = new List();
     monthSpends = new List();
-
-    todayBudget = new BudgetData();
-    weekBudget = new BudgetData();
-    monthBudget = new BudgetData();
 
     todayTotal = 0;
     weekTotal = 0;
@@ -100,6 +87,14 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
       todaySpends.clear();
       weekSpends.clear();
       monthSpends.clear();
+      todayBudget = new BudgetData();
+      weekBudget = new BudgetData();
+      monthBudget = new BudgetData();
+      todaySeriesList.clear();
+      weekSeriesList.clear();
+      weekBarSeriesList.clear();
+      monthSeriesList.clear();
+
       for (var spend in spends) {
         if (spend.dateTime.day == todayDate.day) {
           todayTotal += spend.amount;

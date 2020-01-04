@@ -278,11 +278,43 @@ class Repository {
         List<Spend> spendList = new List();
 
         var spends = new SpendsList.fromJson(event.snapshot.value);
-        for (var spend in spends.spendList) {
-          spendList.add(spend);
-        }
+        spendList.addAll(spends.spendList);
 
         onData( spendList);
+      } else {
+        onData(null);
+      }
+    });
+
+    return subscription;
+  }
+
+  Future<StreamSubscription<Event>> getYearlyListRecords(String year,
+      void onData(List<Spend> spendList)) async {
+    DatabaseReference spendsRef =
+    fbDBRef.reference().child("Spends").child(uid).child(year);
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+    spendsRef.onValue.listen((Event event) {
+      if (event.snapshot.value != null) {
+        List<Spend> spendList = new List();
+
+        var keys = event.snapshot.value.keys;
+        List<dynamic> keyStrings = keys.toList();
+        keyStrings.sort((a, b) => a.compareTo(b));
+
+        for (final key in keyStrings) {
+          var spends = new SpendsList.fromJson(event.snapshot.value[key]);
+          spends.spendList.sort((a, b) {
+            var adate = a.dateTime;
+            var bdate = b.dateTime;
+            return adate.compareTo(bdate);
+          });
+          spendList.addAll(spends.spendList);
+        }
+
+        onData(spendList);
       } else {
         onData(null);
       }
@@ -308,9 +340,7 @@ class Repository {
           for (final key in monthKeys) {
             var spends =
                 new SpendsList.fromJson(event.snapshot.value[year][key]);
-            for (var spend in spends.spendList) {
-              spendList.add(spend);
-            }
+            spendList.addAll(spends.spendList);
           }
         }
 
