@@ -16,8 +16,7 @@ class Spend {
       : key = snapshot.key,
         amount = snapshot.value['amount'],
         category = snapshot.value['category'],
-        dateTime =
-            DateTime.fromMillisecondsSinceEpoch(snapshot.value['dateTime']),
+        dateTime =DateTime.fromMillisecondsSinceEpoch(snapshot.value['dateTime']),
         title = snapshot.value['title'],
         description = snapshot.value['description'];
 

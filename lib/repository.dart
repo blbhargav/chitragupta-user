@@ -265,6 +265,32 @@ class Repository {
     return subscription;
   }
 
+  Future<StreamSubscription<Event>> getMonthlyRecords(String year,String month,
+      void onData(List<Spend> spendList)) async {
+
+    DatabaseReference spendsRef =
+    fbDBRef.reference().child("Spends").child(uid).child(year).child(month);
+    spendsRef.keepSynced(true);
+
+    StreamSubscription<Event> subscription =
+    spendsRef.onValue.listen((Event event) {
+      if (event.snapshot.value != null) {
+        List<Spend> spendList = new List();
+
+        var spends = new SpendsList.fromJson(event.snapshot.value);
+        for (var spend in spends.spendList) {
+          spendList.add(spend);
+        }
+
+        onData( spendList);
+      } else {
+        onData(null);
+      }
+    });
+
+    return subscription;
+  }
+
   Future<StreamSubscription<Event>> getAllSpendRecords(
       void onData(List<Spend> spend)) async {
     DatabaseReference spendsRef =
