@@ -4,8 +4,11 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:chitragupta/models/budgetData.dart';
 import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/repository.dart';
+import 'package:chitragupta/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:chitragupta/app/analytics.dart';
+import 'package:intl/intl.dart';
 
 class MonthAnalytics extends StatefulWidget {
   MonthAnalytics(Repository repository)
@@ -20,7 +23,10 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
       : repository = repository ?? Repository();
   Repository repository;
 
-  List<charts.Series> todaySeriesList=new List();
+  List<charts.Series> todaySeriesList = new List();
+  List<charts.Series> weekSeriesList = new List();
+  List<charts.Series> weekBarSeriesList = new List();
+  List<charts.Series> monthSeriesList = new List();
 
   int todayTotal;
   List<Spend> todaySpends;
@@ -44,15 +50,6 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
   String month;
   BudgetData todayBudget, weekBudget, monthBudget;
 
-  final foodColor = charts.MaterialPalette.blue.makeShades(2)[1];
-  final entertainColor = charts.MaterialPalette.deepOrange.makeShades(2)[1];
-  final travelColor = charts.MaterialPalette.lime.makeShades(2)[1];
-  final snacksColor = charts.MaterialPalette.teal.makeShades(2)[1];
-  final fuelColor = charts.MaterialPalette.yellow.makeShades(2)[2];
-  final billsColor = charts.MaterialPalette.indigo.makeShades(2)[2];
-  final shoppingColor = charts.MaterialPalette.pink.makeShades(2)[1];
-  final healthColor = charts.MaterialPalette.green.makeShades(2)[2];
-  final otherColor = charts.MaterialPalette.purple.makeShades(2)[2];
 
   @override
   void initState() {
@@ -90,6 +87,12 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
     var todayDate = new DateTime.now();
     var weekDate = todayDate.subtract(new Duration(days: 6));
 
+    spends.sort((a, b) {
+      var adate = a.dateTime;
+      var bdate = b.dateTime;
+      return adate.compareTo(bdate);
+    });
+
     setState(() {
       todayTotal = 0;
       weekTotal = 0;
@@ -101,16 +104,34 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
         if (spend.dateTime.day == todayDate.day) {
           todayTotal += spend.amount;
           todaySpends.add(spend);
-          switch(spend.category){
-            case "Food": todayBudget.food+=spend.amount;break;
-            case "Entertainment": todayBudget.entertainment+=spend.amount;break;
-            case "Travel": todayBudget.travel+=spend.amount;break;
-            case "Snacks": todayBudget.snacks+=spend.amount;break;
-            case "Fuel": todayBudget.fuel+=spend.amount;break;
-            case "Bills": todayBudget.bills+=spend.amount;break;
-            case "Shopping": todayBudget.shopping+=spend.amount;break;
-            case "Health": todayBudget.health+=spend.amount;break;
-            case "Others": todayBudget.others+=spend.amount;break;
+          switch (spend.category) {
+            case "Food":
+              todayBudget.food += spend.amount;
+              break;
+            case "Entertainment":
+              todayBudget.entertainment += spend.amount;
+              break;
+            case "Travel":
+              todayBudget.travel += spend.amount;
+              break;
+            case "Snacks":
+              todayBudget.snacks += spend.amount;
+              break;
+            case "Fuel":
+              todayBudget.fuel += spend.amount;
+              break;
+            case "Bills":
+              todayBudget.bills += spend.amount;
+              break;
+            case "Shopping":
+              todayBudget.shopping += spend.amount;
+              break;
+            case "Health":
+              todayBudget.health += spend.amount;
+              break;
+            case "Others":
+              todayBudget.others += spend.amount;
+              break;
           }
         }
         if (spend.dateTime.isAfter(weekDate) &&
@@ -118,32 +139,68 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
           weekTotal += spend.amount;
           weekSpends.add(spend);
 
-          switch(spend.category){
-            case "Food": weekBudget.food+=spend.amount;break;
-            case "Entertainment": weekBudget.entertainment+=spend.amount;break;
-            case "Travel": weekBudget.travel+=spend.amount;break;
-            case "Snacks": weekBudget.snacks+=spend.amount;break;
-            case "Fuel": weekBudget.fuel+=spend.amount;break;
-            case "Bills": weekBudget.bills+=spend.amount;break;
-            case "Shopping": weekBudget.shopping+=spend.amount;break;
-            case "Health": weekBudget.health+=spend.amount;break;
-            case "Others": weekBudget.others+=spend.amount;break;
+          switch (spend.category) {
+            case "Food":
+              weekBudget.food += spend.amount;
+              break;
+            case "Entertainment":
+              weekBudget.entertainment += spend.amount;
+              break;
+            case "Travel":
+              weekBudget.travel += spend.amount;
+              break;
+            case "Snacks":
+              weekBudget.snacks += spend.amount;
+              break;
+            case "Fuel":
+              weekBudget.fuel += spend.amount;
+              break;
+            case "Bills":
+              weekBudget.bills += spend.amount;
+              break;
+            case "Shopping":
+              weekBudget.shopping += spend.amount;
+              break;
+            case "Health":
+              weekBudget.health += spend.amount;
+              break;
+            case "Others":
+              weekBudget.others += spend.amount;
+              break;
           }
         }
 
-        monthTotal += 0;
+        monthTotal += spend.amount;
         monthSpends.add(spend);
 
-        switch(spend.category){
-          case "Food": monthBudget.food+=spend.amount;break;
-          case "Entertainment": monthBudget.entertainment+=spend.amount;break;
-          case "Travel": monthBudget.travel+=spend.amount;break;
-          case "Snacks": monthBudget.snacks+=spend.amount;break;
-          case "Fuel": monthBudget.fuel+=spend.amount;break;
-          case "Bills": monthBudget.bills+=spend.amount;break;
-          case "Shopping": monthBudget.shopping+=spend.amount;break;
-          case "Health": monthBudget.health+=spend.amount;break;
-          case "Others": monthBudget.others+=spend.amount;break;
+        switch (spend.category) {
+          case "Food":
+            monthBudget.food += spend.amount;
+            break;
+          case "Entertainment":
+            monthBudget.entertainment += spend.amount;
+            break;
+          case "Travel":
+            monthBudget.travel += spend.amount;
+            break;
+          case "Snacks":
+            monthBudget.snacks += spend.amount;
+            break;
+          case "Fuel":
+            monthBudget.fuel += spend.amount;
+            break;
+          case "Bills":
+            monthBudget.bills += spend.amount;
+            break;
+          case "Shopping":
+            monthBudget.shopping += spend.amount;
+            break;
+          case "Health":
+            monthBudget.health += spend.amount;
+            break;
+          case "Others":
+            monthBudget.others += spend.amount;
+            break;
         }
       }
 
@@ -159,27 +216,63 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
         new LinearBudgets("Health", todayBudget.health),
         new LinearBudgets("Others", todayBudget.others),
       ];
-      todaySeriesList=[new charts.Series<LinearBudgets, String>(
-        id: 'Sales',
-        domainFn: (LinearBudgets sales, _) => sales.budget,
-        measureFn: (LinearBudgets sales, _) => sales.amount,
-        data: todayData,
-        colorFn: (LinearBudgets sales, _) {
-          switch (sales.budget ){
-          case "Food": return foodColor;
-          case "Entertainment": return entertainColor;
-          case "Travel": return travelColor;
-          case "Snacks": return snacksColor;
-          case "Fuel": return fuelColor;
-          case "Bills": return billsColor;
-          case "Shopping": return shoppingColor;
-          case "Health": return healthColor;
-          case "Others": return otherColor;
-          }
-        },
-        labelAccessorFn: (LinearBudgets row, _) => '${row.budget}: ${row.amount}',
-      )];
+      todaySeriesList = Utils.createPieData(todayData);
 
+
+      //WeekBudget
+      final weekData = [
+        new LinearBudgets("Food", weekBudget.food),
+        new LinearBudgets("Entertainment", weekBudget.entertainment),
+        new LinearBudgets("Travel", weekBudget.travel),
+        new LinearBudgets("Snacks", weekBudget.snacks),
+        new LinearBudgets("Fuel", weekBudget.fuel),
+        new LinearBudgets("Bills", weekBudget.bills),
+        new LinearBudgets("Shopping", weekBudget.shopping),
+        new LinearBudgets("Health", weekBudget.health),
+        new LinearBudgets("Others", weekBudget.others),
+      ];
+      weekSeriesList = Utils.createPieData(weekData);
+
+      WeeklyData weeklyData=new WeeklyData();
+      for (var spend in weekSpends) {
+        switch(DateFormat('EEEE').format(spend.dateTime)){
+          case 'Sunday':weeklyData.sun+=spend.amount;break;
+          case 'Monday':weeklyData.mon+=spend.amount;break;
+          case 'Tuesday':weeklyData.tue+=spend.amount;break;
+          case 'Wednesday':weeklyData.wed+=spend.amount;break;
+          case 'Thursday':weeklyData.thu+=spend.amount;break;
+          case 'Friday':weeklyData.fri+=spend.amount;break;
+          case 'Saturday':weeklyData.sat+=spend.amount;break;
+        }
+      }
+      List<LinearBudgets> weekBarData=List();
+      for(var i=0;i<7;i++){
+        var d=weekDate.add(new Duration(days: i));
+        switch(DateFormat('EEEE').format(d)){
+          case 'Sunday':weekBarData.add(new LinearBudgets("Sun", weeklyData.sun));break;
+          case 'Monday':weekBarData.add(new LinearBudgets("Mon", weeklyData.mon));break;
+          case 'Tuesday':weekBarData.add(new LinearBudgets("Tue", weeklyData.tue));break;
+          case 'Wednesday':weekBarData.add(new LinearBudgets("Wed", weeklyData.wed));break;
+          case 'Thursday':weekBarData.add(new LinearBudgets("Thu", weeklyData.thu));break;
+          case 'Friday':weekBarData.add(new LinearBudgets("Fri", weeklyData.fri));break;
+          case 'Saturday':weekBarData.add(new LinearBudgets("Sat", weeklyData.sat));break;
+        }
+      }
+      weekBarSeriesList= Utils.createBarData(weekBarData);
+
+      //MonthBudget
+      final monthData = [
+        new LinearBudgets("Food", monthBudget.food),
+        new LinearBudgets("Entertainment", monthBudget.entertainment),
+        new LinearBudgets("Travel", monthBudget.travel),
+        new LinearBudgets("Snacks", monthBudget.snacks),
+        new LinearBudgets("Fuel", monthBudget.fuel),
+        new LinearBudgets("Bills", monthBudget.bills),
+        new LinearBudgets("Shopping", monthBudget.shopping),
+        new LinearBudgets("Health", monthBudget.health),
+        new LinearBudgets("Others", monthBudget.others),
+      ];
+      monthSeriesList = Utils.createPieData(monthData);
       _loading = false;
     });
   }
@@ -224,7 +317,7 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
                             Container(
                               width: 10,
                               height: 10,
-                              color: Colors.blue,
+                              color: Color(0xff91CCF5),
                             ),
                             Padding(
                               padding: EdgeInsets.all(3),
@@ -502,11 +595,626 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
             ),
           ),
         ),
+        Padding(padding: EdgeInsets.all(2),),
+        Card(
+          elevation: 2,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "This Week",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff91CCF5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Food"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.food})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffFEAB93),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Entertainment"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.entertainment})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffE0F1A0),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Travel"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.travel})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff80CBC5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Snacks"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.snacks})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffFFEB3C),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Fuel"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.fuel})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff3F51B5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Bills"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.bills})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xFFF190B1),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Shopping"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.shopping})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff4DB04E),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Health"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.health})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff9C27B3),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Others"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.others})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    Stack(
+                      children: <Widget>[
+                        Container(
+                          child: charts.PieChart(weekSeriesList,
+                              animate: true,
+                              animationDuration: Duration(milliseconds: 500),
+                              // Configure the width of the pie slices to 60px. The remaining space in
+                              // the chart will be left as a hole in the center.
+                              defaultRenderer: new charts.ArcRendererConfig(
+                                arcWidth: 25,
+                              )),
+                          height: 180,
+                          width: 180,
+                        ),
+                        Container(
+                          height: 180,
+                          width: 180,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  "Total Spent",
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(2),
+                                ),
+                                Text(
+                                  "$weekTotal",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
+                ),
+
+                Container(
+                  width: double.maxFinite,
+                  height: 200,
+                  padding: EdgeInsets.only(top: 5),
+                  child: charts.BarChart(
+                    weekBarSeriesList,
+                    animate: true,
+                    barRendererDecorator: new charts.BarLabelDecorator<String>(),
+                    domainAxis: new charts.OrdinalAxisSpec(),
+                  ),
+                ),
+
+
+              ],
+            ),
+          ),
+        ),
+        Padding(padding: EdgeInsets.all(2),),
+        Card(
+          elevation: 2,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "This ${DateFormat('MMMM').format(todayDate)}",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff91CCF5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Food"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.food})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffFEAB93),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Entertainment"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.entertainment})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffE0F1A0),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Travel"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.travel})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff80CBC5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Snacks"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.snacks})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xffFFEB3C),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Fuel"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.fuel})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff3F51B5),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Bills"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.bills})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xFFF190B1),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Shopping"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.shopping})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff4DB04E),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Health"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.health})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(2),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: Color(0xff9C27B3),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text("Others"),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                            ),
+                            Text(
+                              "(${weekBudget.others})",
+                              style: TextStyle(
+                                  fontSize: 8,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    Stack(
+                      children: <Widget>[
+                        Container(
+                          child: charts.PieChart(weekSeriesList,
+                              animate: true,
+                              animationDuration: Duration(milliseconds: 500),
+                              // Configure the width of the pie slices to 60px. The remaining space in
+                              // the chart will be left as a hole in the center.
+                              defaultRenderer: new charts.ArcRendererConfig(
+                                arcWidth: 25,
+                              )),
+                          height: 180,
+                          width: 180,
+                        ),
+                        Container(
+                          height: 180,
+                          width: 180,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  "Total Spent",
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(2),
+                                ),
+                                Text(
+                                  "$monthTotal",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
+                ),
+
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
-
-
 
   @override
   void dispose() {
@@ -517,9 +1225,4 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
   }
 }
 
-class LinearBudgets {
-  final String budget;
-  final int amount;
 
-  LinearBudgets(this.budget, this.amount);
-}
