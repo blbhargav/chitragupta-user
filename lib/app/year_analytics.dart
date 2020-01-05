@@ -25,17 +25,18 @@ class _YearAnalyticsState extends State<YearAnalytics>{
   List<Spend> yearSpends;
   var todayDate = new DateTime.now();
   BudgetData yearlyBudget;
+
   int totalAmount=0;
   List<charts.Series> yearSeriesList = new List();
+  List<charts.Series> yearBarSeriesList = new List();
   @override
   void initState() {
     super.initState();
     yearSpends=new List();
     _loading=true;
 
-
     repository
-        .getYearlyListRecords("${todayDate.year}", _updateUI)
+        .getYearlyListRecords(/*"${todayDate.year}"*/"2019", _updateUI)
         .then((StreamSubscription s) => _subscriptionTodo = s)
         .catchError((err) {
       setState(() {
@@ -356,8 +357,21 @@ class _YearAnalyticsState extends State<YearAnalytics>{
                           ),
                         ),
                       ],
-                    )
+                    ),
+
                   ],
+                ),
+
+                Container(
+                  width: double.maxFinite,
+                  height: 200,
+                  padding: EdgeInsets.only(top: 5),
+                  child: charts.BarChart(
+                    yearBarSeriesList,
+                    animate: true,
+                    //barRendererDecorator: new charts.BarLabelDecorator<String>(),
+                    //domainAxis: new charts.OrdinalAxisSpec(),
+                  ),
                 ),
               ],
             ),
@@ -380,6 +394,7 @@ class _YearAnalyticsState extends State<YearAnalytics>{
     setState(() {
       yearlyBudget=new BudgetData();
       totalAmount=0;
+      YearlyData yearlyData=new YearlyData();
       for (var spend in spends) {
         totalAmount+=spend.amount;
         switch (spend.category) {
@@ -411,6 +426,20 @@ class _YearAnalyticsState extends State<YearAnalytics>{
             yearlyBudget.others += spend.amount;
             break;
         }
+        switch(spend.dateTime.month){
+          case 1:yearlyData.jan+=spend.amount;break;
+          case 2:yearlyData.feb+=spend.amount;break;
+          case 3:yearlyData.mar+=spend.amount;break;
+          case 4:yearlyData.apr+=spend.amount;break;
+          case 5:yearlyData.may+=spend.amount;break;
+          case 6:yearlyData.jun+=spend.amount;break;
+          case 7:yearlyData.jul+=spend.amount;break;
+          case 8:yearlyData.aug+=spend.amount;break;
+          case 9:yearlyData.sep+=spend.amount;break;
+          case 10:yearlyData.oct+=spend.amount;break;
+          case 11:yearlyData.nov+=spend.amount;break;
+          case 12:yearlyData.dec+=spend.amount;break;
+        }
 
       }
 
@@ -426,6 +455,25 @@ class _YearAnalyticsState extends State<YearAnalytics>{
         new LinearBudgets("Others", yearlyBudget.others),
       ];
       yearSeriesList = Utils.createPieData(yearData);
+
+      List<LinearBudgets> yearBarData=List();
+      for(var i=1;i<=12;i++){
+        switch(i){
+          case 1:yearBarData.add(new LinearBudgets("Jan", yearlyData.jan));break;
+          case 2:yearBarData.add(new LinearBudgets("Feb", yearlyData.feb));break;
+          case 3:yearBarData.add(new LinearBudgets("Mar", yearlyData.mar));break;
+          case 4:yearBarData.add(new LinearBudgets("Apr", yearlyData.apr));break;
+          case 5:yearBarData.add(new LinearBudgets("May", yearlyData.may));break;
+          case 6:yearBarData.add(new LinearBudgets("Jun", yearlyData.jun));break;
+          case 7:yearBarData.add(new LinearBudgets("Jul", yearlyData.jul));break;
+          case 8:yearBarData.add(new LinearBudgets("Aug", yearlyData.aug));break;
+          case 9:yearBarData.add(new LinearBudgets("Sep", yearlyData.sep));break;
+          case 10:yearBarData.add(new LinearBudgets("Oct", yearlyData.oct));break;
+          case 11:yearBarData.add(new LinearBudgets("Nov", yearlyData.nov));break;
+          case 12:yearBarData.add(new LinearBudgets("Dec", yearlyData.dec));break;
+        }
+      }
+      yearBarSeriesList= Utils.createBarDataWithoutLabels(yearBarData);
 
       yearSpends.addAll(spends);
 

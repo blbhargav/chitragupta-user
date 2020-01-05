@@ -22,7 +22,21 @@ class Utils {
           measureFn: (LinearBudgets spend, _) => spend.amount,
           data: data,
           labelAccessorFn: (LinearBudgets spend, _) =>
-              '${spend.amount}')
+              '${spend.amount}',
+
+      ),
+    ];
+  }
+  static List<charts.Series<LinearBudgets, String>> createBarDataWithoutLabels(data) {
+    return [
+      new charts.Series<LinearBudgets, String>(
+        id: 'Budget',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (LinearBudgets spend, _) => spend.budget,
+        measureFn: (LinearBudgets spend, _) => spend.amount,
+        data: data,
+
+      ),
     ];
   }
 
