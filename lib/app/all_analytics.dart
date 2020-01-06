@@ -378,6 +378,10 @@ class _AllAnalyticsState extends State<AllAnalytics>{
 
   void _updateUI(List<Spend> spends) {
     setState(() {
+      if(spends==null){
+        _loading=false;
+        return;
+      }
       yearlyBudget=new BudgetData();
       totalAmount=0;
       for (var spend in spends) {

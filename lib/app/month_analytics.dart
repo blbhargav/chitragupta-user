@@ -71,6 +71,12 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
   }
 
   void _updateUI(List<Spend> spends) {
+    if(spends==null){
+      setState(() {
+        _loading=false;
+      });
+      return;
+    }
     var todayDate = new DateTime.now();
     var weekDate = todayDate.subtract(new Duration(days: 6));
 

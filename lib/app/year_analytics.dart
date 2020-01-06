@@ -36,7 +36,7 @@ class _YearAnalyticsState extends State<YearAnalytics>{
     _loading=true;
 
     repository
-        .getYearlyListRecords(/*"${todayDate.year}"*/"2019", _updateUI)
+        .getYearlyListRecords("${todayDate.year}", _updateUI)
         .then((StreamSubscription s) => _subscriptionTodo = s)
         .catchError((err) {
       setState(() {
@@ -372,6 +372,7 @@ class _YearAnalyticsState extends State<YearAnalytics>{
                     //barRendererDecorator: new charts.BarLabelDecorator<String>(),
                     //domainAxis: new charts.OrdinalAxisSpec(),
                   ),
+
                 ),
               ],
             ),
@@ -392,6 +393,10 @@ class _YearAnalyticsState extends State<YearAnalytics>{
 
   void _updateUI(List<Spend> spends) {
     setState(() {
+      if(spends==null){
+        _loading=false;
+        return;
+      }
       yearlyBudget=new BudgetData();
       totalAmount=0;
       YearlyData yearlyData=new YearlyData();
