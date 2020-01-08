@@ -115,8 +115,8 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
             case "Travel":
               todayBudget.travel += spend.amount;
               break;
-            case "Snacks":
-              todayBudget.snacks += spend.amount;
+            case "EMI":
+              todayBudget.emi += spend.amount;
               break;
             case "Fuel":
               todayBudget.fuel += spend.amount;
@@ -150,8 +150,8 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
             case "Travel":
               weekBudget.travel += spend.amount;
               break;
-            case "Snacks":
-              weekBudget.snacks += spend.amount;
+            case "EMI":
+              weekBudget.emi += spend.amount;
               break;
             case "Fuel":
               weekBudget.fuel += spend.amount;
@@ -184,8 +184,8 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
           case "Travel":
             monthBudget.travel += spend.amount;
             break;
-          case "Snacks":
-            monthBudget.snacks += spend.amount;
+          case "EMI":
+            monthBudget.emi += spend.amount;
             break;
           case "Fuel":
             monthBudget.fuel += spend.amount;
@@ -210,7 +210,7 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
         new LinearBudgets("Food", todayBudget.food),
         new LinearBudgets("Entertainment", todayBudget.entertainment),
         new LinearBudgets("Travel", todayBudget.travel),
-        new LinearBudgets("Snacks", todayBudget.snacks),
+        new LinearBudgets("EMI", todayBudget.emi),
         new LinearBudgets("Fuel", todayBudget.fuel),
         new LinearBudgets("Bills", todayBudget.bills),
         new LinearBudgets("Shopping", todayBudget.shopping),
@@ -225,7 +225,7 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
         new LinearBudgets("Food", weekBudget.food),
         new LinearBudgets("Entertainment", weekBudget.entertainment),
         new LinearBudgets("Travel", weekBudget.travel),
-        new LinearBudgets("Snacks", weekBudget.snacks),
+        new LinearBudgets("EMI", weekBudget.emi),
         new LinearBudgets("Fuel", weekBudget.fuel),
         new LinearBudgets("Bills", weekBudget.bills),
         new LinearBudgets("Shopping", weekBudget.shopping),
@@ -266,7 +266,7 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
         new LinearBudgets("Food", monthBudget.food),
         new LinearBudgets("Entertainment", monthBudget.entertainment),
         new LinearBudgets("Travel", monthBudget.travel),
-        new LinearBudgets("Snacks", monthBudget.snacks),
+        new LinearBudgets("EMI", monthBudget.emi),
         new LinearBudgets("Fuel", monthBudget.fuel),
         new LinearBudgets("Bills", monthBudget.bills),
         new LinearBudgets("Shopping", monthBudget.shopping),
@@ -401,12 +401,12 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
-                            Text("Snacks"),
+                            Text("EMI"),
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
                             Text(
-                              "(${todayBudget.snacks})",
+                              "(${todayBudget.emi})",
                               style: TextStyle(
                                   fontSize: 8,
                                   fontStyle: FontStyle.italic,
@@ -701,12 +701,12 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
-                            Text("Snacks"),
+                            Text("EMI"),
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
                             Text(
-                              "(${weekBudget.snacks})",
+                              "(${weekBudget.emi})",
                               style: TextStyle(
                                   fontSize: 8,
                                   fontStyle: FontStyle.italic,
@@ -1016,12 +1016,12 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
-                            Text("Snacks"),
+                            Text("EMI"),
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
                             Text(
-                              "(${weekBudget.snacks})",
+                              "(${weekBudget.emi})",
                               style: TextStyle(
                                   fontSize: 8,
                                   fontStyle: FontStyle.italic,

@@ -168,12 +168,12 @@ class _AllAnalyticsState extends State<AllAnalytics>{
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
-                            Text("Snacks"),
+                            Text("EMI"),
                             Padding(
                               padding: EdgeInsets.all(3),
                             ),
                             Text(
-                              "(${yearlyBudget.snacks})",
+                              "(${yearlyBudget.emi})",
                               style: TextStyle(
                                   fontSize: 8,
                                   fontStyle: FontStyle.italic,
@@ -396,8 +396,8 @@ class _AllAnalyticsState extends State<AllAnalytics>{
           case "Travel":
             yearlyBudget.travel += spend.amount;
             break;
-          case "Snacks":
-            yearlyBudget.snacks += spend.amount;
+          case "EMI":
+            yearlyBudget.emi += spend.amount;
             break;
           case "Fuel":
             yearlyBudget.fuel += spend.amount;
@@ -422,7 +422,7 @@ class _AllAnalyticsState extends State<AllAnalytics>{
         new LinearBudgets("Food", yearlyBudget.food),
         new LinearBudgets("Entertainment", yearlyBudget.entertainment),
         new LinearBudgets("Travel", yearlyBudget.travel),
-        new LinearBudgets("Snacks", yearlyBudget.snacks),
+        new LinearBudgets("EMI", yearlyBudget.emi),
         new LinearBudgets("Fuel", yearlyBudget.fuel),
         new LinearBudgets("Bills", yearlyBudget.bills),
         new LinearBudgets("Shopping", yearlyBudget.shopping),

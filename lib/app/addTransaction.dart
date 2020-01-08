@@ -174,7 +174,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     category("Food"),
                     category("Entertainment"),
                     category("Travel"),
-                    category("Snacks"),
+                    category("EMI"),
                     category("Fuel"),
                     category("Bills"),
                     category("Shopping"),
@@ -441,8 +441,8 @@ String getIcon(String s) {
     case "Travel":
       iconData = "assets/travel.svg";
       break;
-    case "Snacks":
-      iconData = "assets/food.svg";
+    case "EMI":
+      iconData = "assets/emi.svg";
       break;
     case "Fuel":
       iconData = "assets/fuel.svg";
