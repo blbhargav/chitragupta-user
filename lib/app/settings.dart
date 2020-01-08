@@ -20,14 +20,12 @@ class _settingsState extends State<Settings>{
   _settingsState(Repository repository): repository = repository ?? Repository();
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      String appName = packageInfo.appName;
-      String packageName = packageInfo.packageName;
-      version = packageInfo.version;
-      String buildNumber = packageInfo.buildNumber;
+      setState(() {
+        version = packageInfo.version;
+      });
     });
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {

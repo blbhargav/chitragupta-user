@@ -186,6 +186,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   padding: EdgeInsets.only(left: 10, right: 10),
                   child: new TextField(
                     controller: this._descriptionController,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
                       labelText: "Description",
                       prefixIcon: Icon(Icons.description),
