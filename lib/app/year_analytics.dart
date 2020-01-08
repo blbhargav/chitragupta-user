@@ -26,7 +26,7 @@ class _YearAnalyticsState extends State<YearAnalytics>{
   var todayDate = new DateTime.now();
   BudgetData yearlyBudget;
 
-  int totalAmount=0;
+  double totalAmount=0;
   List<charts.Series> yearSeriesList = new List();
   List<charts.Series> yearBarSeriesList = new List();
   @override

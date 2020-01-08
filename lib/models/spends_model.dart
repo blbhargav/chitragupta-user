@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 class Spend {
   Spend();
-  int amount;
+  double amount;
   String key;
   String title;
   String category;
@@ -14,7 +14,7 @@ class Spend {
 
   Spend.fromSnapshot(DataSnapshot snapshot)
       : key = snapshot.key,
-        amount = snapshot.value['amount'],
+        amount = snapshot.value['amount'].toDouble(),
         category = snapshot.value['category'],
         dateTime =DateTime.fromMillisecondsSinceEpoch(snapshot.value['dateTime']),
         title = snapshot.value['title'],
@@ -31,7 +31,7 @@ class Spend {
   }
 
   Spend.fromJson(var json)
-      : amount = json['amount'],
+      : amount = json['amount'].toDouble(),
         category = json['category'],
         dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
         description = json['description'],

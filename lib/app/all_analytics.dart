@@ -25,7 +25,7 @@ class _AllAnalyticsState extends State<AllAnalytics>{
   List<Spend> yearSpends;
   var todayDate = new DateTime.now();
   BudgetData yearlyBudget;
-  int totalAmount=0;
+  double totalAmount=0;
   List<charts.Series> yearSeriesList = new List();
   @override
   void initState() {

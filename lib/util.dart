@@ -92,7 +92,7 @@ class Utils {
 
 class LinearBudgets {
   final String budget;
-  final int amount;
+  final double amount;
 
   LinearBudgets(this.budget, this.amount);
 }

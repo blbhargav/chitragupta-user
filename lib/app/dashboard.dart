@@ -9,6 +9,7 @@ import 'package:chitragupta/repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chitragupta/globals.dart' as globals;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class dashBoardScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   String currency = "₹", noDataTV = "";
   StreamSubscription _subscriptionTodo;
   List<Spend> recentSpends = new List();
-  int today = 0, yesterday = 0, month = 0;
+  double today = 0, yesterday = 0, month = 0;
   bool _laoding = true;
   Repository repository;
   @override
@@ -60,7 +61,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
     }
     List<Spend> spendList = spendsList.spendList;
     List<Spend> tempRecentSpends = new List();
-    int tempToday = 0, tempYesterday = 0, tempMonth = 0;
+    double tempToday = 0, tempYesterday = 0, tempMonth = 0;
 
     spendList.sort((a, b) {
       var adate = a.dateTime;
@@ -294,8 +295,15 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                               color: Colors.cyan,
                                             ),
                                           ),
-                                          child: Icon(getIcon(
-                                              recentSpends[index].category)),
+                                          padding: EdgeInsets.all(5),
+                                          child:Container(
+                                            padding: EdgeInsets.all(5),
+                                            child: SvgPicture.asset(
+                                              getIcon(recentSpends[index].category),
+                                            ),
+                                            height: 20.0,
+                                            width: 20.0,
+                                          ) ,
                                         ),
                                       ),
                                       Padding(

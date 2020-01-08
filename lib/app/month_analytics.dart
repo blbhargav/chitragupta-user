@@ -27,11 +27,11 @@ class _MonthAnalyticsState extends State<MonthAnalytics> {
   List<charts.Series> weekBarSeriesList = new List();
   List<charts.Series> monthSeriesList = new List();
 
-  int todayTotal;
+  double todayTotal;
   List<Spend> todaySpends;
-  int weekTotal;
+  double weekTotal;
   List<Spend> weekSpends;
-  int monthTotal;
+  double monthTotal;
   List<Spend> monthSpends;
   bool _loading;
 

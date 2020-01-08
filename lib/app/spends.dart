@@ -8,6 +8,7 @@ import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class Spends extends StatefulWidget {
@@ -184,7 +185,15 @@ class _spendsState extends State<Spends> {
                           color: Colors.cyan,
                         ),
                       ),
-                      child: Icon(getIcon(spend.category)),
+                        padding: EdgeInsets.all(5),
+                        child:Container(
+                          padding: EdgeInsets.all(5),
+                          child: SvgPicture.asset(
+                            getIcon(spend.category),
+                          ),
+                          height: 20.0,
+                          width: 20.0,
+                        )
                     ),
                   ),
                   Padding(

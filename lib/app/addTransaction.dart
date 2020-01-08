@@ -4,11 +4,13 @@ import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-
+import 'dart:math' as math;
 import '../login.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -46,7 +48,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     dateTime = DateTime.now();
 
     if(oldSpend!=null){
-      print("BLB old spend");
       _amountController.text="${oldSpend.amount}";
       _spendController.text=oldSpend.title;
       if(oldSpend.description.isNotEmpty)
@@ -88,6 +89,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   padding: EdgeInsets.only(left: 10, right: 10),
                   child: new TextField(
                     controller: this._amountController,
+                    inputFormatters: [DecimalTextInputFormatter(decimalRange: 2)],
                     decoration: InputDecoration(
                         labelText: "Amount *",
                         prefixText: "₹",
@@ -99,13 +101,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           borderSide: BorderSide(color: Colors.indigo),
                         ),
                         errorText: amountErrorTV),
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 10, right: 10),
                   child: new TextField(
                     controller: this._spendController,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
                         labelText: "What is this spend for? *",
                         prefixIcon: Icon(Icons.info),
@@ -261,7 +264,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: Colors.cyan,
                   ),
                 ),
-                child: Icon(getIcon(s)),
+                  padding: EdgeInsets.all(5),
+                  child:Container(
+                    padding: EdgeInsets.all(5),
+                    child: SvgPicture.asset(
+                      getIcon(s),
+                    ),
+                    height: 20.0,
+                    width: 20.0,
+                  )
               ),
             ),
             Padding(
@@ -310,7 +321,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       });
     } else {
       Spend spend = new Spend();
-      spend.amount = int.parse(amount);
+      spend.amount = double.parse(amount);
       spend.category = category;
       spend.dateTime = dateTime;
       spend.title = title;
@@ -418,33 +429,73 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 }
 
-IconData getIcon(String s) {
-  IconData iconData = Icons.more;
+String getIcon(String s) {
+  String iconData = "assets/more.svg";
   switch (s) {
     case "Food":
-      iconData = Icons.restaurant;
+      iconData = "assets/food.svg";
       break;
     case "Entertainment":
-      iconData = Icons.play_arrow;
+      iconData = "assets/entertainment.svg";
       break;
     case "Travel":
-      iconData = Icons.card_travel;
+      iconData = "assets/travel.svg";
       break;
     case "Snacks":
-      iconData = Icons.fastfood;
+      iconData = "assets/food.svg";
       break;
     case "Fuel":
-      iconData = Icons.local_gas_station;
+      iconData = "assets/fuel.svg";
       break;
     case "Bills":
-      iconData = Icons.receipt;
+      iconData = "assets/bill.svg";
       break;
     case "Shopping":
-      iconData = Icons.shopping_cart;
+      iconData = "assets/shopping.svg";
       break;
     case "Health":
-      iconData = Icons.healing;
+      iconData = "assets/health.svg";
       break;
   }
   return iconData;
+}
+
+class DecimalTextInputFormatter extends TextInputFormatter {
+  DecimalTextInputFormatter({this.decimalRange})
+      : assert(decimalRange == null || decimalRange > 0);
+
+  final int decimalRange;
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, // unused.
+      TextEditingValue newValue,
+      ) {
+    TextSelection newSelection = newValue.selection;
+    String truncated = newValue.text;
+
+    if (decimalRange != null) {
+      String value = newValue.text;
+
+      if (value.contains(".") &&
+          value.substring(value.indexOf(".") + 1).length > decimalRange) {
+        truncated = oldValue.text;
+        newSelection = oldValue.selection;
+      } else if (value == ".") {
+        truncated = "0.";
+
+        newSelection = newValue.selection.copyWith(
+          baseOffset: math.min(truncated.length, truncated.length + 1),
+          extentOffset: math.min(truncated.length, truncated.length + 1),
+        );
+      }
+
+      return TextEditingValue(
+        text: truncated,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    }
+    return newValue;
+  }
 }
