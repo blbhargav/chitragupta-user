@@ -104,6 +104,7 @@ class _EditProfileState extends State<EditProfile> {
               margin: EdgeInsets.only(left: 10, right: 10),
               child: TextField(
                 controller: this._nameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                     labelText: "Name",
                     prefixIcon: Icon(Icons.info),
