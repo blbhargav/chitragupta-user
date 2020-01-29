@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
-import 'dart:ffi';
 import 'dart:math';
 import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/main.dart';
@@ -90,15 +89,15 @@ class Repository {
   Future<String> getUserId() async {
     if (prefs == null) prefs = await SharedPreferences.getInstance();
     if (prefs.getString("uid") != null) {
-      uid = prefs.getString("uid");
+      Repository.uid = prefs.getString("uid");
     } else {
       FirebaseUser user = await _firebaseAuth.currentUser();
-      uid = user.uid;
-      prefs.setString("uid", uid);
+      Repository.uid = user.uid;
+      prefs.setString("uid", Repository.uid);
     }
 
-    globals.UID = uid;
-    return uid;
+    globals.UID = Repository.uid;
+    return Repository.uid;
   }
 
   Future<StreamSubscription<Event>> getUserProfile(
