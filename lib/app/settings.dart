@@ -147,23 +147,26 @@ class _settingsState extends State<Settings>{
   void showLogoutAlert() {
     showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
+            contentPadding: EdgeInsets.only(top: 10.0),
             title: new Text("Are you sure to Logout?"),
             content: Text(""),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
-                child: new Text("Logout"),
+                child: new Text("Logout",style: TextStyle(fontSize: 18),),
                 onPressed: () {
                   Navigator.of(context).pop();
                   _logout();
                 },
               ),
               new FlatButton(
-                child: new Text("No"),
+                child: new Text("No",style: TextStyle(fontSize: 18),),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
