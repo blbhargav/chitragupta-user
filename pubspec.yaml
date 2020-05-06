@@ -11,9 +11,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.2
   flutter_launcher_icons: ^0.7.2
+  material_design_icons_flutter: ^4.0.5145
   firebase_core: ^0.4.3+2 #For firebase database
   firebase_database: ^3.1.1
-  firebase_auth: ^0.15.3+1 #firebase Authentication
+  firebase_auth: ^0.16.0 #firebase Authentication
   shared_preferences: ^0.5.6 #for local storage
   intl: ^0.16.0
   flutter_datetime_picker: ^1.2.6

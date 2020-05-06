@@ -26,15 +26,11 @@ class _ProfileState extends State<Profile> {
   _ProfileState(Repository repository):repository=repository??Repository();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     repository
-        .getUserProfile(_updateUserName)
-        .then((StreamSubscription s) => _subscriptionTodo = s).catchError((err){
-          setState(() {
-            _laoding=false;
-          });
+        .getUserProfile().then((res){
+          _updateUserName(User.fromSnapshot(snapshot: res));
     });
   }
 

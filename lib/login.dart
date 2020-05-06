@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chitragupta/app/dashboard.dart';
 import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/background.dart';
@@ -43,9 +45,10 @@ class _Login extends State<Login> {
   Repository repository;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     repository=Repository();
+    _userIdController.text="bhargavblb@gmail.com";
+    _passwordController.text="12345678";
   }
   @override
   Widget build(BuildContext context) {
@@ -90,33 +93,7 @@ class _Login extends State<Login> {
                     children: <Widget>[
                       InputWidgetPassword(
                           30.0, 0.0, "Password", _passwordController),
-                      Padding(
-                          padding: EdgeInsets.only(right: 50),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              GestureDetector(
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: ShapeDecoration(
-                                    shape: CircleBorder(),
-                                    gradient: LinearGradient(
-                                        colors: signInGradients,
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight),
-                                  ),
-                                  child: ImageIcon(
-                                    AssetImage("assets/ic_forward.png"),
-                                    size: 40,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                onTap: () {
-                                  loginFunction();
-                                },
-                              )
-                            ],
-                          ))
+
                     ],
                   ),
                 ],
@@ -138,22 +115,15 @@ class _Login extends State<Login> {
               Padding(
                 padding: EdgeInsets.only(bottom: 20),
               ),
-              Text(
-                "New user?",
-                style: TextStyle(decoration: TextDecoration.none, fontSize: 14),
-              ),
-              Padding(
-                padding: EdgeInsets.all(2),
-              ),
               //roundedRectButton("Let's get Started", signInGradients, false),
               GestureDetector(
                 child: roundedRectButton(
-                  "Create an Account",
+                  "Login",
                   signUpGradients,
                   false,
                 ),
                 onTap: () {
-                  signUp();
+                  loginFunction();
                 },
               ),
               Padding(
@@ -196,7 +166,7 @@ class _Login extends State<Login> {
         setState(() {
           _loading = false;
         });
-        await repository.updateUserSignedLocally(true,res.uid);
+        await repository.updateUserSignedLocally(true,res.user.uid);
         navigateToHome();
       }).catchError((e) {
         print("BLB login $e");
@@ -226,7 +196,6 @@ class _Login extends State<Login> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _userIdController.dispose();
     _passwordController.dispose();

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
+import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/main.dart';
 import 'package:chitragupta/models/spends_model.dart';
@@ -12,12 +13,14 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chitragupta/globals.dart' as globals;
 import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Repository {
   FirebaseAuth _firebaseAuth;
   SharedPreferences prefs;
   FirebaseDatabase fbDBRef;
   static String uid = globals.UID;
+  final databaseReference = Firestore.instance;
 
   Repository({FirebaseAuth firebaseAuth, fbDBRef}) {
     _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
@@ -100,24 +103,66 @@ class Repository {
     return Repository.uid;
   }
 
-  Future<StreamSubscription<Event>> getUserProfile(
-      void onData(User user)) async {
-    DatabaseReference profileReference =
-        fbDBRef.reference().child("Profile").child(uid);
-    profileReference.keepSynced(true);
-
-    StreamSubscription<Event> subscription =
-        profileReference.onValue.listen((Event event) {
-      if (event.snapshot.value != null) {
-        var user = new User.fromSnapshot(snapshot: event.snapshot);
-        onData(user);
-      } else {
-        onData(null);
-      }
-    });
-
-    return subscription;
+  getUserProfile() async {
+    if (uid == null) {
+      await getUserId();
+    }
+    return databaseReference
+        .collection("Team").document(uid).get();
   }
+
+  getActiveOrders() {
+
+      Stream<QuerySnapshot> reference = databaseReference
+          .collection("Orders")
+          .where("year", isEqualTo: DateTime.now().year)
+          .where("uid", isEqualTo: HomeScreenState.user.adminId)
+          .where("status", isEqualTo: 1)
+          .orderBy("date", descending: false)
+          .limit(15)
+          .snapshots();
+
+      return reference;
+
+  }
+
+  getProductsCount(String orderId)  async {
+
+    QuerySnapshot _myDoc = await databaseReference.collection('Orders').document(orderId).collection("products").getDocuments();
+    List<DocumentSnapshot> _myDocCount = _myDoc.documents;
+    print("BLB products lenght ${_myDocCount.length}");
+    return _myDocCount.length;
+  }
+
+  getOrder(String orderId) {
+    Stream<DocumentSnapshot> reference =
+    databaseReference.collection("Orders").document(orderId).snapshots();
+    return reference;
+  }
+
+  getOrderProducts(String orderId) {
+    Stream<QuerySnapshot> reference = databaseReference
+        .collection("Orders")
+        .document(orderId)
+        .collection("products").orderBy("purchasedQty",descending: false)
+        .snapshots();
+    return reference;
+  }
+
+
+
+
+  /*
+  *
+  *
+  *
+  * Old Data
+  *
+  *
+  *
+  *
+  * */
+
 
   Future addSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);

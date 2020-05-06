@@ -2,6 +2,7 @@ import 'package:chitragupta/app/analytics.dart';
 import 'package:chitragupta/app/dashboard.dart';
 import 'package:chitragupta/app/settings.dart';
 import 'package:chitragupta/app/spends.dart';
+import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,22 +12,27 @@ class homeScreen extends StatefulWidget {
   Repository repository;
 
   @override
-  _homeScreenState createState() => _homeScreenState(repository);
+  HomeScreenState createState() => HomeScreenState(repository);
 }
 
-class _homeScreenState extends State<homeScreen> with TickerProviderStateMixin {
+class HomeScreenState extends State<homeScreen> with TickerProviderStateMixin {
   var _selectedIndex = 0;
   DateTime currentBackPressTime;
 
-  _homeScreenState(Repository repository)
+  HomeScreenState(Repository repository)
       : repository = repository ?? Repository();
 
   Repository repository;
-
+  static User user;
   @override
   void initState() {
     super.initState();
     repository.getUserId();
+
+    repository
+        .getUserProfile().then((res){
+      user=User.fromSnapshot(snapshot: res);
+    });
   }
 
   @override
@@ -40,8 +46,8 @@ class _homeScreenState extends State<homeScreen> with TickerProviderStateMixin {
             : (_selectedIndex == 1
                 ? Spends(repository)
                 : (_selectedIndex == 2
-                    ? Analytics(repository)
-                    : (_selectedIndex == 3 ? Settings(repository) : Container()))),
+                    ? Settings(repository)
+                    : Settings(repository))),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.lightBlue[900],
           items: const <BottomNavigationBarItem>[
@@ -53,10 +59,10 @@ class _homeScreenState extends State<homeScreen> with TickerProviderStateMixin {
               icon: Icon(Icons.monetization_on),
               title: Text('Spends'),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.insert_chart),
-              title: Text('Analytics'),
-            ),
+//            BottomNavigationBarItem(
+//              icon: Icon(Icons.insert_chart),
+//              title: Text('Analytics'),
+//            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
               title: Text('Settings'),

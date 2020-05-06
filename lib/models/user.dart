@@ -1,18 +1,38 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class User {
-  String uid,email,name,profileImage;
-  User({this.uid,this.email,this.name,this.profileImage});
+  String adminId;
+  String email;
+  String mobile;
+  String name;
+  String uid,id;
 
-  User.fromSnapshot({DataSnapshot snapshot})
-      :uid = snapshot.value['uid'],email = snapshot.value['email'],name = snapshot.value['name'],profileImage = snapshot.value['profileImage'];
+  User({this.adminId, this.email, this.mobile, this.name, this.uid});
 
-  toJson() {
-    return {
-      "uid": uid,
-      "email": email,
-      "name": name,
-      "profileImage": profileImage
-    };
+  User.fromJson(Map<String, dynamic> json) {
+    adminId = json['adminId'];
+    email = json['email'];
+    mobile = json['mobile'];
+    name = json['name'];
+    uid = json['userId'];
+  }
+  User.fromSnapshot({DocumentSnapshot snapshot}) {
+    adminId = snapshot.data['adminId'];
+    email = snapshot.data['email'];
+    mobile = snapshot.data['mobile'];
+    name = snapshot.data['name'];
+    uid = snapshot.data['userId'];
+    id=snapshot.documentID;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['adminId'] = this.adminId;
+    data['email'] = this.email;
+    data['mobile'] = this.mobile;
+    data['name'] = this.name;
+    data['userId'] = this.uid;
+    return data;
   }
 }
