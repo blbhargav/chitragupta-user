@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Order {
   String uid, orderId,name;
-  int year, month, day,status,totalItems,procuredItems;
+  int year, month, day,status,totalItems,procuredItems,amountSpent,amountEarned;
   DateTime date,createdDate;
   Order(
       {this.uid, this.date, this.createdDate, this.year, this.month, this.day,this.status,this.totalItems,this.procuredItems});

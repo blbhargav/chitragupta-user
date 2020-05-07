@@ -1,3 +1,4 @@
+import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/models/Order.dart';
 import 'package:chitragupta/models/Product.dart';
 import 'package:chitragupta/progress.dart';
@@ -21,6 +22,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
   Order order;
   var pocuredColor = Colors.red[500];
   List<Product> productsList = new List();
+  var totalSpent=0;
   @override
   void initState() {
     super.initState();
@@ -30,6 +32,9 @@ class _DisplayOrderState extends State<DisplayOrder> {
         order = Order.fromSnapshot(snapshot: event);
         if (order.totalItems == order.procuredItems) {
           pocuredColor = Colors.green[500];
+        }
+        if(event.data["${HomeScreenState.user.uid}"]!=null){
+          totalSpent=event.data[HomeScreenState.user.uid];
         }
       });
     });
@@ -103,6 +108,23 @@ class _DisplayOrderState extends State<DisplayOrder> {
                       Column(
                         children: <Widget>[
                           Text(
+                            "Amount Spent",
+                            style:
+                            TextStyle(color: Colors.black54, fontSize: 12),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(2),
+                          ),
+                          Text("₹ ${totalSpent}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 19,
+                                  color: Colors.blue[900])),
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text(
                             "Procured Items",
                             style:
                                 TextStyle(color: Colors.black54, fontSize: 12),
@@ -120,19 +142,26 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     ],
                   ),
                   Padding(padding: EdgeInsets.all(10)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "Items List",
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.blue[900]),
-                      ),
-                      IconButton(icon: Icon(Icons.search),iconSize: 25,)
-                    ],
+                  Text(
+                    "Items List",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue[900]),
+                  ),
+                  TextField(
+                    //controller: this._oldController,
+                    decoration: InputDecoration(
+                        hintText: "Search Item by name",
+                        prefixIcon: Icon(Icons.search),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.cyan),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.indigo),
+                        ),
+                        //errorText: oldErrorTV
+                    ),
                   ),
                   productsList.length == 0
                       ? Container(
@@ -159,9 +188,9 @@ class _DisplayOrderState extends State<DisplayOrder> {
                               itemCount: productsList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 Product product = productsList[index];
-                                var purchasedColor=Colors.red[500];
-                                if(product.POQty==product.purchasedQty){
-                                  purchasedColor=Colors.green[500];
+                                var purchasedColor = Colors.red[500];
+                                if (product.POQty == product.purchasedQty) {
+                                  purchasedColor = Colors.green[500];
                                 }
                                 return GestureDetector(
                                   child: Card(
@@ -253,8 +282,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                        color:
-                                                        purchasedColor),
+                                                        color: purchasedColor),
                                                   ),
                                                 ],
                                               )
@@ -265,7 +293,8 @@ class _DisplayOrderState extends State<DisplayOrder> {
                                     ),
                                   ),
                                   onTap: () {
-                                    showEditProductAlertDialog(context,product);
+                                    showEditProductAlertDialog(
+                                        context, product);
                                   },
                                 );
                               }),
@@ -277,6 +306,9 @@ class _DisplayOrderState extends State<DisplayOrder> {
       opacity: 0.4,
     );
   }
+  var _purchaseQtyController=TextEditingController();
+  var _purchaseAmountController=TextEditingController();
+  String _purchaseQuantityErrorTV,_purchaseAmountErorTV;
   showEditProductAlertDialog(BuildContext contxt, Product product) {
     return showDialog(
         context: contxt,
@@ -288,7 +320,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
             content: Container(
               width: 500.0,
               padding:
-              EdgeInsets.only(top: 10, right: 15, bottom: 10, left: 15),
+                  EdgeInsets.only(top: 10, right: 15, bottom: 10, left: 15),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -307,12 +339,12 @@ class _DisplayOrderState extends State<DisplayOrder> {
                   Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: new TextField(
-                      //controller: this._extraDataKeyController,
+                      controller: this._purchaseQtyController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         labelText: "Purchased Quantity",
                         prefixIcon: Icon(Icons.info),
-                       // errorText: _extraDataKeyErrorTV,
+                        errorText: _purchaseQuantityErrorTV,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyan),
                         ),
@@ -328,12 +360,12 @@ class _DisplayOrderState extends State<DisplayOrder> {
                   Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: new TextField(
-                      //controller: this._extraDataValueController,
+                      controller: this._purchaseAmountController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         labelText: "Amount Spent",
                         prefixIcon: Icon(MdiIcons.currencyInr),
-                        //errorText: _extraDataValueErrorTV,
+                        errorText: _purchaseAmountErorTV,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyan),
                         ),
@@ -351,7 +383,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     // height: double.infinity,
                     child: RaisedButton(
                       child: Text(
-                        "Add",
+                        "Update",
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.w700),
                       ),
@@ -361,8 +393,30 @@ class _DisplayOrderState extends State<DisplayOrder> {
                       color: Colors.lightBlue[900],
                       padding: EdgeInsets.only(top: 15, bottom: 15),
                       onPressed: () async {
+                        _purchaseQuantityErrorTV=null;
+                        _purchaseAmountErorTV=null;
                         Navigator.pop(context);
-
+                        if(_purchaseQtyController.text.isEmpty){
+                          _purchaseQuantityErrorTV="Please enter Purchased Quantity";
+                          showEditProductAlertDialog(contxt,product);
+                          return;
+                        }
+                        if(_purchaseAmountController.text.isEmpty){
+                          _purchaseAmountErorTV="Please enter Amount Spent";
+                          showEditProductAlertDialog(contxt,product);
+                          return;
+                        }
+                        setState(() {
+                          _loading=true;
+                        });
+                        int pQty=int.parse(_purchaseQtyController.text);
+                        int amountSpent=int.parse(_purchaseAmountController.text);
+                        widget.repository.updatePurchaseQuantity(widget.orderId, product.id,pQty, amountSpent);
+                        setState(() {
+                          _loading=false;
+                        });
+                        _purchaseAmountController.text="";
+                        _purchaseQtyController.text="";
                       },
                     ),
                   ),

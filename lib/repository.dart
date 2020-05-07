@@ -26,6 +26,7 @@ class Repository {
     _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
     this.fbDBRef = fbDBRef ?? FirebaseDatabase.instance;
     this.fbDBRef.setPersistenceEnabled(true);
+    databaseReference.settings(persistenceEnabled: true);
     getUserId();
   }
 
@@ -107,28 +108,28 @@ class Repository {
     if (uid == null) {
       await getUserId();
     }
-    return databaseReference
-        .collection("Team").document(uid).get();
+    return databaseReference.collection("Team").document(uid).get();
   }
 
   getActiveOrders() {
+    Stream<QuerySnapshot> reference = databaseReference
+        .collection("Orders")
+        .where("year", isEqualTo: DateTime.now().year)
+        .where("uid", isEqualTo: HomeScreenState.user.adminId)
+        .where("status", isEqualTo: 1)
+        .orderBy("date", descending: false)
+        .limit(15)
+        .snapshots();
 
-      Stream<QuerySnapshot> reference = databaseReference
-          .collection("Orders")
-          .where("year", isEqualTo: DateTime.now().year)
-          .where("uid", isEqualTo: HomeScreenState.user.adminId)
-          .where("status", isEqualTo: 1)
-          .orderBy("date", descending: false)
-          .limit(15)
-          .snapshots();
-
-      return reference;
-
+    return reference;
   }
 
-  getProductsCount(String orderId)  async {
-
-    QuerySnapshot _myDoc = await databaseReference.collection('Orders').document(orderId).collection("products").getDocuments();
+  getProductsCount(String orderId) async {
+    QuerySnapshot _myDoc = await databaseReference
+        .collection('Orders')
+        .document(orderId)
+        .collection("products")
+        .getDocuments();
     List<DocumentSnapshot> _myDocCount = _myDoc.documents;
     print("BLB products lenght ${_myDocCount.length}");
     return _myDocCount.length;
@@ -136,7 +137,7 @@ class Repository {
 
   getOrder(String orderId) {
     Stream<DocumentSnapshot> reference =
-    databaseReference.collection("Orders").document(orderId).snapshots();
+        databaseReference.collection("Orders").document(orderId).snapshots();
     return reference;
   }
 
@@ -144,13 +145,31 @@ class Repository {
     Stream<QuerySnapshot> reference = databaseReference
         .collection("Orders")
         .document(orderId)
-        .collection("products").orderBy("purchasedQty",descending: false)
+        .collection("products")
+        .orderBy("purchasedQty", descending: false)
         .snapshots();
     return reference;
   }
 
+  updatePurchaseQuantity(String orderId, String productId, int purchasedQty, int amountSpent){
+    databaseReference
+        .collection("Orders")
+        .document(orderId)
+        .collection("products")
+        .document(productId)
+        .updateData({
+      "purchasedQty": purchasedQty,
+      "amountSpent": amountSpent,
+      "payer": HomeScreenState.user.name
+    });
 
-
+    databaseReference.collection("Orders").document(orderId).updateData({
+      "procuredItems": FieldValue.increment(1),
+      "amountSpent": FieldValue.increment(amountSpent),
+      "${HomeScreenState.user.uid}": FieldValue.increment(amountSpent)
+    });
+    //
+  }
 
   /*
   *
@@ -162,7 +181,6 @@ class Repository {
   *
   *
   * */
-
 
   Future addSpend(Spend spend) async {
     String month = DateFormat('MM').format(spend.dateTime);
@@ -309,22 +327,21 @@ class Repository {
     return subscription;
   }
 
-  Future<StreamSubscription<Event>> getMonthlyRecords(String year,String month,
-      void onData(List<Spend> spendList)) async {
-
+  Future<StreamSubscription<Event>> getMonthlyRecords(
+      String year, String month, void onData(List<Spend> spendList)) async {
     DatabaseReference spendsRef =
-    fbDBRef.reference().child("Spends").child(uid).child(year).child(month);
+        fbDBRef.reference().child("Spends").child(uid).child(year).child(month);
     spendsRef.keepSynced(true);
 
     StreamSubscription<Event> subscription =
-    spendsRef.onValue.listen((Event event) {
+        spendsRef.onValue.listen((Event event) {
       if (event.snapshot.value != null) {
         List<Spend> spendList = new List();
 
         var spends = new SpendsList.fromJson(event.snapshot.value);
         spendList.addAll(spends.spendList);
 
-        onData( spendList);
+        onData(spendList);
       } else {
         onData(null);
       }
@@ -333,14 +350,14 @@ class Repository {
     return subscription;
   }
 
-  Future<StreamSubscription<Event>> getYearlyListRecords(String year,
-      void onData(List<Spend> spendList)) async {
+  Future<StreamSubscription<Event>> getYearlyListRecords(
+      String year, void onData(List<Spend> spendList)) async {
     DatabaseReference spendsRef =
-    fbDBRef.reference().child("Spends").child(uid).child(year);
+        fbDBRef.reference().child("Spends").child(uid).child(year);
     spendsRef.keepSynced(true);
 
     StreamSubscription<Event> subscription =
-    spendsRef.onValue.listen((Event event) {
+        spendsRef.onValue.listen((Event event) {
       if (event.snapshot.value != null) {
         List<Spend> spendList = new List();
 

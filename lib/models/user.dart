@@ -15,14 +15,14 @@ class User {
     email = json['email'];
     mobile = json['mobile'];
     name = json['name'];
-    uid = json['userId'];
+    uid = json['uid'];
   }
   User.fromSnapshot({DocumentSnapshot snapshot}) {
     adminId = snapshot.data['adminId'];
     email = snapshot.data['email'];
     mobile = snapshot.data['mobile'];
     name = snapshot.data['name'];
-    uid = snapshot.data['userId'];
+    uid = snapshot.data['uid'];
     id=snapshot.documentID;
   }
 
