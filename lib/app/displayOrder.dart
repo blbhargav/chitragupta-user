@@ -154,6 +154,9 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     decoration: InputDecoration(
                         hintText: "Search Item by name",
                         prefixIcon: Icon(Icons.search),
+                        suffix: GestureDetector(child:Icon(Icons.cancel),onTap: (){
+
+                        },),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyan),
                         ),

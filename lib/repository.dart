@@ -160,7 +160,8 @@ class Repository {
         .updateData({
       "purchasedQty": purchasedQty,
       "amountSpent": amountSpent,
-      "payer": HomeScreenState.user.name
+      "payer": HomeScreenState.user.name,
+      "payerId":"${HomeScreenState.user.uid}"
     });
 
     databaseReference.collection("Orders").document(orderId).updateData({

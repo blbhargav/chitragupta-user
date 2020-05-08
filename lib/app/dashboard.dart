@@ -104,9 +104,9 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                         scrollDirection: Axis.vertical,
                         itemCount: monthOrdersList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          var pocuredColor=Colors.red[500];
+                          var pocuredColor=Colors.red[600];
                           if(monthOrdersList[index].totalItems==monthOrdersList[index].procuredItems){
-                            pocuredColor=Colors.green[500];
+                            pocuredColor=Colors.green[800];
                           }
                           return InkWell(
                             child: Card(
