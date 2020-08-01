@@ -7,6 +7,8 @@ import 'app/dashboard.dart';
 import 'login.dart';
 
 class SplashScreen extends StatefulWidget {
+  final Repository repository;
+  SplashScreen({this.repository});
   @override
   _SplashScreenState createState() => new _SplashScreenState();
 }
@@ -15,23 +17,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     var _duration = new Duration(seconds: 3);
     return new Timer(_duration, _checkUserHistory);
   }
-  Repository repository;
   @override
   void initState() {
     super.initState();
-    repository=Repository();
     startTime();
   }
   void _checkUserHistory() async {
 
-    bool signedInLocal=await repository.isUserSignedLocally();
-    bool signedInFirebase=await repository.isSignedIn();
+    bool signedInLocal=await widget.repository.isUserSignedLocally();
+    bool signedInFirebase=await widget.repository.isSignedIn();
 
     if(signedInFirebase && signedInLocal){
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => homeScreen(repository)
+              builder: (context) => homeScreen(widget.repository)
           ),
           ModalRoute.withName("/Home")
       );
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => loginRoot()
+              builder: (context) => loginRoot(repository: widget.repository,)
           ),
           ModalRoute.withName("/login")
       );

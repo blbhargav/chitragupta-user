@@ -12,25 +12,19 @@ class homeScreen extends StatefulWidget {
   Repository repository;
 
   @override
-  HomeScreenState createState() => HomeScreenState(repository);
+  HomeScreenState createState() => HomeScreenState();
 }
 
 class HomeScreenState extends State<homeScreen> with TickerProviderStateMixin {
   var _selectedIndex = 0;
   DateTime currentBackPressTime;
-
-  HomeScreenState(Repository repository)
-      : repository = repository ?? Repository();
-
-  Repository repository;
   static User user;
   @override
   void initState() {
     super.initState();
-    repository.getUserId();
+    widget.repository.getUserId();
 
-    repository
-        .getUserProfile().then((res){
+    widget.repository.getUserProfile().then((res){
       user=User.fromSnapshot(snapshot: res);
     });
   }
@@ -41,13 +35,13 @@ class HomeScreenState extends State<homeScreen> with TickerProviderStateMixin {
       child: Scaffold(
         body: _selectedIndex == 0
             ? dashBoardScreen(
-                repository,
+          widget.repository,
               )
             : (_selectedIndex == 1
-                ? Spends(repository)
+                ? Spends(widget.repository)
                 : (_selectedIndex == 2
-                    ? Settings(repository)
-                    : Settings(repository))),
+                    ? Settings(widget.repository)
+                    : Settings(widget.repository))),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.lightBlue[900],
           items: const <BottomNavigationBarItem>[

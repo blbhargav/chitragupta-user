@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class loginRoot extends StatefulWidget {
+  final Repository repository;
+  loginRoot({this.repository});
   @override
   _loginRootState createState() => _loginRootState();
 }
@@ -18,19 +20,20 @@ class loginRoot extends StatefulWidget {
 class _loginRootState extends State<loginRoot> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       //resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: Stack(
-        children: <Widget>[Background(), Login()],
+        children: <Widget>[Background(), Login(repository: widget.repository,)],
       ),
     );
   }
 }
 
 class Login extends StatefulWidget {
+  final Repository repository;
+  Login({this.repository});
   TextEditingController _userIdController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   @override
@@ -42,11 +45,9 @@ class _Login extends State<Login> {
   String error;
   bool _loading = false;
   _Login(this._userIdController, this._passwordController);
-  Repository repository;
   @override
   void initState() {
     super.initState();
-    repository=Repository();
     _userIdController.text="bhargavblb@gmail.com";
     _passwordController.text="12345678";
   }
@@ -159,14 +160,14 @@ class _Login extends State<Login> {
         _loading = true;
       });
       SystemChannels.textInput.invokeMethod('TextInput.hide');
-      repository
+      widget.repository
           .signInWithCredentials(
               _userIdController.text, _passwordController.text)
           .then((res) async {
         setState(() {
           _loading = false;
         });
-        await repository.updateUserSignedLocally(true,res.user.uid);
+        await widget.repository.updateUserSignedLocally(true,res.user.uid);
         navigateToHome();
       }).catchError((e) {
         print("BLB login $e");
@@ -201,63 +202,10 @@ class _Login extends State<Login> {
     _passwordController.dispose();
   }
 
-  void signUp() {
-    setState(() {
-      error = null;
-    });
-    if (_userIdController.text.isEmpty) {
-      setState(() {
-        error = "Please enter email Id";
-      });
-    } else if (_passwordController.text.isEmpty) {
-      setState(() {
-        error = "Please enter password";
-      });
-    } else if (_passwordController.text.length < 6) {
-      setState(() {
-        error = "Password must be at least 6 characters";
-      });
-    } else {
-      setState(() {
-        _loading = true;
-      });
-      repository
-          .signUp(_userIdController.text, _passwordController.text)
-          .then((res) async {
-        await repository.updateUserSignedLocally(true,res.uid);
-        User user=new User(email:_userIdController.text,uid:res.uid);
-        user.name="Guest";
-        await repository.createUserProfile(user);
-        setState(() {
-          _loading = false;
-        });
-        navigateToHome();
-      }).catchError((e) {
-        print("BLB signup $e");
-        setState(() {
-          _loading = false;
-        });
-        if (e.toString().toLowerCase().contains("already")) {
-          setState(() {
-            error = "Email already registered";
-          });
-        } else if (e.toString().toLowerCase().contains("invalid_email")) {
-          setState(() {
-            error = "Invalid email Id";
-          });
-        } else {
-          setState(() {
-            error = "Something went wrong. Please try again later.";
-          });
-        }
-      });
-    }
-  }
-
   void navigateToHome() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => homeScreen(repository)),
+        MaterialPageRoute(builder: (context) => homeScreen(widget.repository)),
         ModalRoute.withName("/Home"));
   }
 
@@ -366,7 +314,7 @@ class _Login extends State<Login> {
     setState(() {
       _loading = true;
     });
-    repository.sendResetLink(email).then((res) {
+    widget.repository.sendResetLink(email).then((res) {
       setState(() {
         _loading = false;
       });

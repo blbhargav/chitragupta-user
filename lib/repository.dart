@@ -21,6 +21,7 @@ class Repository {
   FirebaseDatabase fbDBRef;
   static String uid = globals.UID;
   final databaseReference = Firestore.instance;
+  User user;
 
   Repository({FirebaseAuth firebaseAuth, fbDBRef}) {
     _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
@@ -91,16 +92,18 @@ class Repository {
   }
 
   Future<String> getUserId() async {
-    if (prefs == null) prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("uid") != null) {
-      Repository.uid = prefs.getString("uid");
-    } else {
-      FirebaseUser user = await _firebaseAuth.currentUser();
-      Repository.uid = user.uid;
-      prefs.setString("uid", Repository.uid);
+    if(globals.UID==null){
+      if (prefs == null) prefs = await SharedPreferences.getInstance();
+      if (prefs.getString("uid") != null) {
+        Repository.uid = prefs.getString("uid");
+      } else {
+        FirebaseUser user = await _firebaseAuth.currentUser();
+        Repository.uid = user.uid;
+        prefs.setString("uid", Repository.uid);
+      }
+    }else{
+      Repository.uid=globals.UID;
     }
-
-    globals.UID = Repository.uid;
     return Repository.uid;
   }
 
@@ -108,7 +111,7 @@ class Repository {
     if (uid == null) {
       await getUserId();
     }
-    return databaseReference.collection("Team").document(uid).get();
+    return databaseReference.collection("Users").document(uid).get();
   }
 
   getActiveOrders() {
