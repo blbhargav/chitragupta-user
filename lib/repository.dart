@@ -76,7 +76,10 @@ class Repository {
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
     globals.isLoggedIn = currentUser != null;
-    if (currentUser != null) globals.UID = currentUser.uid;
+    if (currentUser != null){
+      globals.UID = currentUser.uid;
+      uid= currentUser.uid;
+    }
     return currentUser != null;
   }
 
@@ -88,6 +91,8 @@ class Repository {
   Future<void> updateUserSignedLocally(bool signed, String uid) async {
     if (prefs == null) prefs = await SharedPreferences.getInstance();
     prefs.setString("uid", uid);
+    Repository.uid= uid;
+    globals.UID=uid;
     return prefs.setBool("logged_in", signed);
   }
 
@@ -118,7 +123,7 @@ class Repository {
     Stream<QuerySnapshot> reference = databaseReference
         .collection("Orders")
         .where("year", isEqualTo: DateTime.now().year)
-        .where("uid", isEqualTo: HomeScreenState.user.adminId)
+        .where("uid", isEqualTo: user.adminId)
         .where("status", isEqualTo: 1)
         .orderBy("date", descending: false)
         .limit(15)
@@ -163,14 +168,14 @@ class Repository {
         .updateData({
       "purchasedQty": purchasedQty,
       "amountSpent": amountSpent,
-      "payer": HomeScreenState.user.name,
-      "payerId":"${HomeScreenState.user.uid}"
+      "payer": user.name,
+      "payerId":"${user.uid}"
     });
 
     databaseReference.collection("Orders").document(orderId).updateData({
       "procuredItems": FieldValue.increment(1),
       "amountSpent": FieldValue.increment(amountSpent),
-      "${HomeScreenState.user.uid}": FieldValue.increment(amountSpent)
+      "${user.uid}": FieldValue.increment(amountSpent)
     });
     //
   }

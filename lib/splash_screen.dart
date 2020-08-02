@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'app/dashboard.dart';
 import 'login.dart';
+import 'models/user.dart';
 
 class SplashScreen extends StatefulWidget {
   final Repository repository;
@@ -14,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 }
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin{
   startTime() async {
-    var _duration = new Duration(seconds: 3);
+    var _duration = new Duration(seconds: 2);
     return new Timer(_duration, _checkUserHistory);
   }
   @override
@@ -28,6 +29,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     bool signedInFirebase=await widget.repository.isSignedIn();
 
     if(signedInFirebase && signedInLocal){
+      var res= await widget.repository.getUserProfile();
+      widget.repository.user=User.fromSnapshot(snapshot: res);
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

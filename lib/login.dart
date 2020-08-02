@@ -164,10 +164,12 @@ class _Login extends State<Login> {
           .signInWithCredentials(
               _userIdController.text, _passwordController.text)
           .then((res) async {
+        await widget.repository.updateUserSignedLocally(true,res.user.uid);
+        var result= await widget.repository.getUserProfile();
+        widget.repository.user=User.fromSnapshot(snapshot: result);
         setState(() {
           _loading = false;
         });
-        await widget.repository.updateUserSignedLocally(true,res.user.uid);
         navigateToHome();
       }).catchError((e) {
         print("BLB login $e");

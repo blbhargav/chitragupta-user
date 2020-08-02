@@ -33,8 +33,8 @@ class _DisplayOrderState extends State<DisplayOrder> {
         if (order.totalItems == order.procuredItems) {
           pocuredColor = Colors.green[500];
         }
-        if(event.data["${HomeScreenState.user.uid}"]!=null){
-          totalSpent=event.data[HomeScreenState.user.uid];
+        if(event.data["${widget.repository.user.uid}"]!=null){
+          totalSpent=event.data[widget.repository.user.uid];
         }
       });
     });

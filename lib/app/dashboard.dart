@@ -21,13 +21,11 @@ class dashBoardScreen extends StatefulWidget {
       : repository = repository ?? Repository();
 
   @override
-  _dashBoardScreenState createState() => _dashBoardScreenState(repository);
+  _dashBoardScreenState createState() => _dashBoardScreenState();
 }
 
 class _dashBoardScreenState extends State<dashBoardScreen>
     with TickerProviderStateMixin {
-  _dashBoardScreenState(Repository repository)
-      : repository = repository ?? Repository();
 
   String userName = "Hi Guest";
   String currency = "₹", noDataTV = "No Data Found";
@@ -35,28 +33,16 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   List<Spend> recentSpends = new List();
   double today = 0, yesterday = 0, month = 0;
   bool _loading = true;
-  Repository repository;
   List<Order> monthOrdersList = new List();
   @override
   void initState() {
     super.initState();
-
-    if (HomeScreenState.user == null) {
-      repository.getUserProfile().then((res) {
-        User user = (User.fromSnapshot(snapshot: res));
-        HomeScreenState.user = user;
-        setState(() {
-          userName = "Hi ${user.name}";
-        });
-        getDataFromServer();
-      });
-    } else {
-      getDataFromServer();
-    }
+    userName = "Hi ${widget.repository.user.name}";
+    getDataFromServer();
   }
 
   void getDataFromServer() {
-    repository.getActiveOrders().listen((event) {
+    widget.repository.getActiveOrders().listen((event) {
       List<Order> tempMonthOrdersList = new List();
       if (event.documents.length > 0) {
         event.documents.forEach((element) {
@@ -183,7 +169,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DisplayOrder(repository,orderId:monthOrdersList[index].orderId,)),
+                                MaterialPageRoute(builder: (context) => DisplayOrder(widget.repository,orderId:monthOrdersList[index].orderId,)),
                               );
                             },
                           );
@@ -202,7 +188,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   void addTransactionPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddTransactionScreen(repository)),
+      MaterialPageRoute(builder: (context) => AddTransactionScreen(widget.repository)),
     );
   }
 
@@ -218,6 +204,6 @@ class _dashBoardScreenState extends State<dashBoardScreen>
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DisplaySpendScreen(recentSpend, repository)));
+            builder: (context) => DisplaySpendScreen(recentSpend, widget.repository)));
   }
 }

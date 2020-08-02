@@ -18,14 +18,11 @@ class homeScreen extends StatefulWidget {
 class HomeScreenState extends State<homeScreen> with TickerProviderStateMixin {
   var _selectedIndex = 0;
   DateTime currentBackPressTime;
-  static User user;
   @override
   void initState() {
     super.initState();
-    widget.repository.getUserId();
-
     widget.repository.getUserProfile().then((res){
-      user=User.fromSnapshot(snapshot: res);
+      widget.repository.user=User.fromSnapshot(snapshot: res);
     });
   }
 
