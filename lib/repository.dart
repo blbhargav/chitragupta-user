@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/app/spends.dart';
 import 'package:chitragupta/main.dart';
+import 'package:chitragupta/models/Product.dart';
 import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,6 +105,7 @@ class Repository {
       } else {
         FirebaseUser user = await _firebaseAuth.currentUser();
         Repository.uid = user.uid;
+        uid=user.uid;
         prefs.setString("uid", Repository.uid);
       }
     }else{
@@ -122,25 +124,31 @@ class Repository {
   getActiveOrders() {
     Stream<QuerySnapshot> reference = databaseReference
         .collection("Orders")
-        .where("year", isEqualTo: DateTime.now().year)
-        .where("uid", isEqualTo: user.adminId)
+        .where("adminId", isEqualTo: user.adminId)
         .where("status", isEqualTo: 1)
         .orderBy("date", descending: false)
-        .limit(15)
+        .limit(25)
         .snapshots();
 
     return reference;
   }
 
-  getProductsCount(String orderId) async {
-    QuerySnapshot _myDoc = await databaseReference
+  Future<List<Product>> getProductsByEmployee(String orderId) async {
+    List<Product> indentList=List();
+    QuerySnapshot snapshot = await databaseReference
         .collection('Orders')
         .document(orderId)
         .collection("products")
+        //.where("empolyeeId",isEqualTo: uid)
         .getDocuments();
-    List<DocumentSnapshot> _myDocCount = _myDoc.documents;
-    print("BLB products lenght ${_myDocCount.length}");
-    return _myDocCount.length;
+    if (snapshot.documents.length > 0) {
+      snapshot.documents.forEach((element) {
+        Product product = Product.fromSnapshot(snapshot: element);
+        if(product.employeeId == uid)
+          indentList.add(product);
+      });
+    }
+    return indentList;
   }
 
   getOrder(String orderId) {
@@ -154,6 +162,7 @@ class Repository {
         .collection("Orders")
         .document(orderId)
         .collection("products")
+        .where("employeeId",isEqualTo: uid)
         .orderBy("purchasedQty", descending: false)
         .snapshots();
     return reference;

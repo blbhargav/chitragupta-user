@@ -5,6 +5,7 @@ import 'package:chitragupta/app/displayOrder.dart';
 import 'package:chitragupta/app/displaySpend.dart';
 import 'package:chitragupta/app/home.dart';
 import 'package:chitragupta/models/Order.dart';
+import 'package:chitragupta/models/Product.dart';
 import 'package:chitragupta/models/spends_model.dart';
 import 'package:chitragupta/models/user.dart';
 import 'package:chitragupta/progress.dart';
@@ -33,7 +34,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   List<Spend> recentSpends = new List();
   double today = 0, yesterday = 0, month = 0;
   bool _loading = true;
-  List<Order> monthOrdersList = new List();
+  List<Order> activeOrdersList = new List();
   @override
   void initState() {
     super.initState();
@@ -42,15 +43,27 @@ class _dashBoardScreenState extends State<dashBoardScreen>
   }
 
   void getDataFromServer() {
-    widget.repository.getActiveOrders().listen((event) {
+    widget.repository.getActiveOrders().listen((event) async {
       List<Order> tempMonthOrdersList = new List();
       if (event.documents.length > 0) {
-        event.documents.forEach((element) {
-          tempMonthOrdersList.add(Order.fromSnapshot(snapshot: element));
-        });
+        for(int i=0;i<event.documents.length;i++){
+          Order order=Order.fromSnapshot(snapshot: event.documents[i]);
+          var products=await widget.repository.getProductsByEmployee(order.orderId);
+          order.assignedItems.addAll(products);
+          var procuredItems=0;
+          if(order.assignedItems.length>0){
+            order.assignedItems.forEach((element) {
+                if(element.purchasedQty!=null && element.purchasedQty>0)
+                  procuredItems++;
+            });
+          }
+          order.procuredItems=procuredItems;
+          tempMonthOrdersList.add(order);
+        }
       }
+
       setState(() {
-        monthOrdersList = tempMonthOrdersList;
+        activeOrdersList = tempMonthOrdersList;
         _loading = false;
       });
     });
@@ -80,7 +93,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
             ),
             Expanded(
               child: Container(
-                child: monthOrdersList.length <= 0
+                child: activeOrdersList.length <= 0
                     ? Center(
                         heightFactor: 20,
                         child: Text(noDataTV),
@@ -88,10 +101,10 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                     : ListView.builder(
                         padding: EdgeInsets.all(5),
                         scrollDirection: Axis.vertical,
-                        itemCount: monthOrdersList.length,
+                        itemCount: activeOrdersList.length,
                         itemBuilder: (BuildContext context, int index) {
                           var pocuredColor=Colors.red[600];
-                          if(monthOrdersList[index].totalItems==monthOrdersList[index].procuredItems){
+                          if(activeOrdersList[index].totalItems==activeOrdersList[index].procuredItems){
                             pocuredColor=Colors.green[800];
                           }
                           return InkWell(
@@ -101,17 +114,22 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    Text(
+                                      "#${activeOrdersList[index].orderId}",
+                                      style:
+                                      TextStyle(color: Colors.black54,fontWeight: FontWeight.w400),
+                                    ),
+                                    Padding(padding: EdgeInsets.all(3),),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         Text(
-                                          "#${monthOrdersList[index].orderId}",
+                                          "${activeOrdersList[index].name}",
                                           style:
-                                              TextStyle(color: Colors.black54),
+                                              TextStyle(color: Colors.black,fontWeight: FontWeight.w700),
                                         ),
-                                        Text(
-                                            "${DateFormat("dd-MMM-yyyy").format(monthOrdersList[index].date)}",
+                                        Text("${DateFormat("dd-MMM-yyyy").format(activeOrdersList[index].date)}",
                                         style: TextStyle(color: Colors.blue[900],fontWeight: FontWeight.w700),)
                                       ],
                                     ),
@@ -134,7 +152,26 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                               padding: EdgeInsets.all(2),
                                             ),
                                             Text(
-                                                "${monthOrdersList[index].totalItems ?? 0}",
+                                                "${activeOrdersList[index].totalItems ?? 0}",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 18,
+                                                    color: Colors.blue[900])),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: <Widget>[
+                                            Text(
+                                              "Assigned Items",
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 12),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(2),
+                                            ),
+                                            Text(
+                                                "${(activeOrdersList[index].assignedItems.length)}",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w700,
                                                     fontSize: 18,
@@ -153,7 +190,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                                               padding: EdgeInsets.all(2),
                                             ),
                                             Text(
-                                                "${monthOrdersList[index].procuredItems ?? 0}",
+                                                "${activeOrdersList[index].procuredItems ?? 0}",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w700,
                                                     fontSize: 18,
@@ -169,7 +206,7 @@ class _dashBoardScreenState extends State<dashBoardScreen>
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DisplayOrder(widget.repository,orderId:monthOrdersList[index].orderId,)),
+                                MaterialPageRoute(builder: (context) => DisplayOrder(widget.repository,order:activeOrdersList[index],)),
                               );
                             },
                           );

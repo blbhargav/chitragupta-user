@@ -4,13 +4,14 @@ import 'package:chitragupta/models/Product.dart';
 import 'package:chitragupta/progress.dart';
 import 'package:chitragupta/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class DisplayOrder extends StatefulWidget {
-  String orderId;
-  DisplayOrder(Repository repository, {this.orderId})
+  Order order;
+  DisplayOrder(Repository repository, {this.order})
       : repository = repository ?? Repository();
   Repository repository;
   @override
@@ -18,36 +19,45 @@ class DisplayOrder extends StatefulWidget {
 }
 
 class _DisplayOrderState extends State<DisplayOrder> {
-  bool _loading = false;
-  Order order;
+  bool _loading = false,_showSearchClearIcon=false;
   var pocuredColor = Colors.red[500];
-  List<Product> productsList = new List();
+  final List<Product> productsList = new List();
+  List<Product> displayProductsList = new List();
   var totalSpent=0;
+  TextEditingController _spareSearchControllers = TextEditingController();
   @override
   void initState() {
     super.initState();
-    widget.repository.getOrder(widget.orderId).listen((event) {
-      setState(() {
-        _loading = false;
-        order = Order.fromSnapshot(snapshot: event);
-        if (order.totalItems == order.procuredItems) {
-          pocuredColor = Colors.green[500];
-        }
-        if(event.data["${widget.repository.user.uid}"]!=null){
-          totalSpent=event.data[widget.repository.user.uid];
-        }
-      });
-    });
-
-    widget.repository.getOrderProducts(widget.orderId).listen((event) {
+    widget.repository.getOrderProducts(widget.order.orderId).listen((event) {
       List<Product> productS = new List();
+      var procuredItems=0;
+      var tempTotalSpent=0;
       if (event.documents.length > 0) {
         event.documents.forEach((element) {
-          productS.add(Product.fromSnapshot(snapshot: element));
+          var product=Product.fromSnapshot(snapshot: element);
+          if(product.purchasedQty!=null && product.purchasedQty>0)
+            procuredItems++;
+          if(product.amountSpent!=null && product.amountSpent>0)
+            tempTotalSpent=tempTotalSpent+product.amountSpent;
+          productS.add(product);
         });
+
+        if(widget.order.assignedItems.length>0){
+          widget.order.assignedItems.forEach((element) {
+            if(element.purchasedQty!=null && element.purchasedQty>0)
+              procuredItems++;
+          });
+        }
+        widget.order.procuredItems=procuredItems;
       }
       setState(() {
-        productsList = productS;
+        totalSpent=tempTotalSpent;
+        widget.order.procuredItems=procuredItems;
+        widget.order.assignedItems.clear();
+        widget.order.assignedItems.addAll(productS);
+        productsList.clear();
+        productsList.addAll(productS);
+        displayProductsList=productS;
       });
     });
   }
@@ -57,10 +67,10 @@ class _DisplayOrderState extends State<DisplayOrder> {
     return ProgressHUD(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("${widget.orderId}"),
+          title: Text("${widget.order.orderId}"),
           backgroundColor: Colors.blue[900],
         ),
-        body: order == null
+        body: widget.order == null
             ? Center(
                 child: Text("No Data Found"),
               )
@@ -71,11 +81,11 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Created @ ${DateFormat("dd-MMM-yyyy").format(order.createdDate)}",
-                        style: TextStyle(color: Colors.black54, fontSize: 12),
+                        "${widget.order.name}",
+                        style: TextStyle(color: Colors.black, fontSize: 14,fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        "${DateFormat("dd-MMM-yyyy").format(order.date)}",
+                        "${DateFormat("dd-MMM-yyyy").format(widget.order.date)}",
                         style: TextStyle(
                             color: Colors.blue[900],
                             fontWeight: FontWeight.w700),
@@ -91,14 +101,14 @@ class _DisplayOrderState extends State<DisplayOrder> {
                       Column(
                         children: <Widget>[
                           Text(
-                            "Total Items",
+                            "Assigned Items",
                             style:
                                 TextStyle(color: Colors.black54, fontSize: 12),
                           ),
                           Padding(
                             padding: EdgeInsets.all(2),
                           ),
-                          Text("${order.totalItems ?? 0}",
+                          Text("${widget.order.assignedItems.length}",
                               style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 18,
@@ -108,7 +118,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
                       Column(
                         children: <Widget>[
                           Text(
-                            "Amount Spent",
+                            "Total Amount Spent",
                             style:
                             TextStyle(color: Colors.black54, fontSize: 12),
                           ),
@@ -132,7 +142,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
                           Padding(
                             padding: EdgeInsets.all(2),
                           ),
-                          Text("${order.procuredItems ?? 0}",
+                          Text("${widget.order.procuredItems ?? 0}",
                               style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 18,
@@ -142,28 +152,30 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     ],
                   ),
                   Padding(padding: EdgeInsets.all(10)),
-                  Text(
-                    "Items List",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.blue[900]),
-                  ),
-                  TextField(
-                    //controller: this._oldController,
-                    decoration: InputDecoration(
-                        hintText: "Search Item by name",
-                        prefixIcon: Icon(Icons.search),
-                        suffix: GestureDetector(child:Icon(Icons.cancel),onTap: (){
-
-                        },),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.indigo),
-                        ),
-                        //errorText: oldErrorTV
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1, //
+                        color: Colors.grey,
+                      ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(
+                              15.0) //         <--- border radius here
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.search),
+                      title: TextField(
+                        controller: _spareSearchControllers,
+                        decoration: InputDecoration(
+                            hintText: 'Search Product', border: InputBorder.none),
+                        onChanged: onSearchTextChanged,
+                      ),
+                      trailing: _showSearchClearIcon? IconButton(icon:  Icon(Icons.cancel), onPressed: () {
+                        _spareSearchControllers.clear();
+                        onSearchTextChanged('');
+                      },):null,
                     ),
                   ),
                   productsList.length == 0
@@ -183,121 +195,114 @@ class _DisplayOrderState extends State<DisplayOrder> {
                                   padding: EdgeInsets.only(top: 10, bottom: 10),
                                   margin: EdgeInsets.only(top: 2, bottom: 2),
                                   width: MediaQuery.of(context).size.width,
+                                  color: Colors.black12,
                                   height: 1,
                                 );
                               },
                               padding: EdgeInsets.all(5),
                               scrollDirection: Axis.vertical,
-                              itemCount: productsList.length,
+                              itemCount: displayProductsList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                Product product = productsList[index];
+                                Product product = displayProductsList[index];
                                 var purchasedColor = Colors.red[500];
-                                if (product.POQty == product.purchasedQty) {
+                                if (product.purchaseQty == product.purchasedQty) {
                                   purchasedColor = Colors.green[500];
                                 }
-                                return GestureDetector(
-                                  child: Card(
-                                    child: Container(
-                                      padding: EdgeInsets.only(
-                                          bottom: 10,
-                                          top: 10,
-                                          left: 10,
-                                          right: 10),
-                                      child: Column(
-                                        children: <Widget>[
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Text(
-                                                "${product.description}",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16),
-                                              ),
-                                              Column(
-                                                children: <Widget>[
-                                                  Text(
-                                                    "Total Order",
-                                                    style: TextStyle(
-                                                        fontSize: 8,
-                                                        color: Colors.black45),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.only(top: 2),
-                                                  ),
-                                                  Text(
-                                                    "${product.POQty}",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color:
-                                                            Colors.blue[900]),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(10),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Column(
-                                                children: <Widget>[
-                                                  Text(
-                                                    "Payer",
-                                                    style: TextStyle(
-                                                        fontSize: 8,
-                                                        color: Colors.black45),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.only(top: 2),
-                                                  ),
-                                                  Text(
-                                                    "${product.payer ?? "-"}",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color:
-                                                            Colors.blue[900]),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: <Widget>[
-                                                  Text(
-                                                    "Purchased",
-                                                    style: TextStyle(
-                                                        fontSize: 8,
-                                                        color: Colors.black45),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.only(top: 2),
-                                                  ),
-                                                  Text(
-                                                    "${product.purchasedQty}",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color: purchasedColor),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                return InkWell(
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        bottom: 10,
+                                        top: 10,
+                                        left: 10,
+                                        right: 10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          "${product.product}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Column(
+                                              children: <Widget>[
+                                                Text(
+                                                  "Expected Qty",
+                                                  style: TextStyle(
+                                                      fontSize: 9,
+                                                      color: Colors.black45),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                  EdgeInsets.only(top: 2),
+                                                ),
+                                                Text(
+                                                  "${product.purchaseQty ?? 0}",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                      FontWeight.w700,
+                                                      fontSize: 15,
+                                                      color:
+                                                      Colors.blue[900]),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(
+                                                  "Amount Spent",
+                                                  style: TextStyle(
+                                                      fontSize: 8,
+                                                      color: Colors.black45),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                  EdgeInsets.only(top: 2),
+                                                ),
+                                                Text(
+                                                  "₹ ${product.amountSpent ?? 0}",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                      FontWeight.w700,
+                                                      color: Colors.green),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(
+                                                  "Purchased",
+                                                  style: TextStyle(
+                                                      fontSize: 8,
+                                                      color: Colors.black45),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                  EdgeInsets.only(top: 2),
+                                                ),
+                                                Text(
+                                                  "${product.purchasedQty ?? 0}",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                      FontWeight.w700,
+                                                      color: purchasedColor),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   onTap: () {
-                                    showEditProductAlertDialog(
-                                        context, product);
+                                    showEditProductAlertDialog(context, product);
                                   },
                                 );
                               }),
@@ -321,29 +326,37 @@ class _DisplayOrderState extends State<DisplayOrder> {
                 borderRadius: BorderRadius.all(Radius.circular(15.0))),
             contentPadding: EdgeInsets.only(top: 10.0),
             content: Container(
-              width: 500.0,
+              width: MediaQuery.of(contxt).size.width/0.9,
               padding:
                   EdgeInsets.only(top: 10, right: 15, bottom: 10, left: 15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+              child: ListView(
+                shrinkWrap: true,
                 children: <Widget>[
                   Text(
-                    "${product.description}",
+                    "${product.product}",
                     style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 17,
                         color: Colors.blue[900],
                         fontWeight: FontWeight.w500),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.only(top: 10,bottom: 10),
+                    child: Row(
+                      children: [
+                        Text("Expected Purchase Qty : ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                        Text("${product.purchaseQty ?? 0}",style: TextStyle(fontWeight: FontWeight.w700),)
+                       ],
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: new TextField(
                       controller: this._purchaseQtyController,
                       textCapitalization: TextCapitalization.sentences,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                      ],
                       decoration: InputDecoration(
                         labelText: "Purchased Quantity",
                         prefixIcon: Icon(Icons.info),
@@ -358,13 +371,17 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(10),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: new TextField(
                       controller: this._purchaseAmountController,
                       textCapitalization: TextCapitalization.sentences,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                      ],
                       decoration: InputDecoration(
                         labelText: "Amount Spent",
                         prefixIcon: Icon(MdiIcons.currencyInr),
@@ -379,7 +396,7 @@ class _DisplayOrderState extends State<DisplayOrder> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(10),
                   ),
                   SizedBox(
                     width: double.infinity,
@@ -414,12 +431,26 @@ class _DisplayOrderState extends State<DisplayOrder> {
                         });
                         int pQty=int.parse(_purchaseQtyController.text);
                         int amountSpent=int.parse(_purchaseAmountController.text);
-                        widget.repository.updatePurchaseQuantity(widget.orderId, product.id,pQty, amountSpent);
+                        widget.repository.updatePurchaseQuantity(widget.order.orderId, product.id,pQty, amountSpent);
                         setState(() {
                           _loading=false;
                         });
                         _purchaseAmountController.text="";
                         _purchaseQtyController.text="";
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                  ),
+                  Center(
+                    child: InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text("Cancel",style: TextStyle(color: Colors.black54),),
+                      ),
+                      onTap: (){
+                        Navigator.pop(context);
                       },
                     ),
                   ),
@@ -431,5 +462,22 @@ class _DisplayOrderState extends State<DisplayOrder> {
             ),
           );
         });
+  }
+  void onSearchTextChanged(String text) {
+    List<Product> tempProductsData=List();
+    displayProductsList.clear();
+    if (text.isEmpty) {
+      tempProductsData.addAll(productsList);
+    }else{
+      productsList.forEach((product) {
+        if (product.product.toLowerCase().contains(text.toLowerCase())){
+          tempProductsData.add(product);
+        }
+      });
+    }
+    setState(() {
+      _showSearchClearIcon=text.isNotEmpty;
+      displayProductsList.addAll(tempProductsData);
+    });
   }
 }

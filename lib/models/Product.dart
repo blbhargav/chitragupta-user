@@ -14,26 +14,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// id : ""
 
 class Product {
-  String description;
-  int POQty;
-  int ourQty;
-  int usedQty;
-  int purchasedQty;
-  int actualExcessQty;
-  int EODExcess;
-  int amountSpent;
-  int returnQty;
-  int invoiceAmount;
-  int paid;
-  String id,payer,remarks;
+  int deliveredQty=0;
+  int purchasedQty=0;
+  int actualExcessQty=0;
+  int EODExcess=0;
+  int amountSpent=0;
+  int returnQty=0;
+  int invoiceAmount=0;
+  String remarks;
 
-  Product({this.description, this.POQty, this.ourQty, this.usedQty, this.purchasedQty, this.actualExcessQty, this.EODExcess, this.amountSpent, this.returnQty, this.invoiceAmount, this.remarks, this.id});
+  String id;
+  String product;
+  String productId;
+  String category;
+  int categoryId;
+  String orderId;
+  int createdDate;
+  String employee;
+  String employeeId;
+  int purchaseOrderQty=0;
+  int purchaseQty=0;
+
+  Product({this.deliveredQty, this.purchasedQty, this.actualExcessQty, this.EODExcess, this.amountSpent,
+    this.returnQty, this.invoiceAmount, this.remarks, this.id,this.orderId,this.purchaseQty,this.purchaseOrderQty,this.categoryId,this.createdDate});
 
   Product.fromSnapshot({DocumentSnapshot snapshot}) {
-    this.description = snapshot.data["description"];
-    this.POQty = snapshot.data["POQty"];
-    this.ourQty = snapshot.data["ourQty"];
-    this.usedQty = snapshot.data["usedQty"];
+    this.deliveredQty = snapshot.data["deliveredQty"];
     this.purchasedQty = snapshot.data["purchasedQty"];
     this.actualExcessQty = snapshot.data["actualExcessQty"];
     this.EODExcess = snapshot.data["EODExcess"];
@@ -42,16 +48,21 @@ class Product {
     this.invoiceAmount = snapshot.data["invoiceAmount"];
     this.remarks = snapshot.data["remarks"];
     this.id = snapshot.documentID;
-    this.payer=snapshot.data["payer"];
-    //this.payer=snapshot.data["payer"];
+    this.product = snapshot.data["product"];
+    this.productId = snapshot.data["productId"];
+    this.category = snapshot.data["category"];
+    this.categoryId = snapshot.data["categoryId"];
+    this.orderId = snapshot.data["orderId"];
+    this.employee = snapshot.data["employee"];
+    this.employeeId = snapshot.data["employeeId"];
+    this.purchaseOrderQty = snapshot.data["purchaseOrderQty"];
+    this.purchaseQty = snapshot.data["purchaseQty"];
+    this.createdDate=snapshot.data["createdDate"];
   }
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
-    map["description"] = description;
-    map["POQty"] = POQty;
-    map["ourQty"] = ourQty;
-    map["usedQty"] = usedQty;
+    map["usedQty"] = deliveredQty;
     map["purchasedQty"] = purchasedQty;
     map["actualExcessQty"] = actualExcessQty;
     map["EODExcess"] = EODExcess;
@@ -65,18 +76,25 @@ class Product {
 
   toJson(){
     return {
-      "description":description,
-      "POQty":POQty,
-      "ourQty":ourQty,
-      "usedQty":usedQty,
+      "product":product,
+      "productId":productId,
+      "purchaseQty":purchaseQty,
       "purchasedQty":purchasedQty,
+      "purchaseOrderQty":purchaseOrderQty,
+      "employeeId":employeeId,
+      "employee":employee,
+      "categoryId":categoryId,
+      "category":category,
+      "deliveredQty":deliveredQty,
       "actualExcessQty":actualExcessQty,
       "EODExcess":EODExcess,
-      "amountSpent":amountSpent,
       "returnQty":returnQty,
       "invoiceAmount":invoiceAmount,
       "remarks":remarks,
-      "id":id
+      "createdDate":createdDate,
+      "id":id,
+      "amountSpent":amountSpent,
+      "orderId":orderId
     };
   }
 
