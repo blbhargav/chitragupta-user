@@ -27,7 +27,7 @@ class Product {
   String product;
   String productId;
   String category;
-  int categoryId;
+  String categoryId;
   String orderId;
   int createdDate;
   String employee;
@@ -48,10 +48,10 @@ class Product {
     this.invoiceAmount = snapshot.data["invoiceAmount"];
     this.remarks = snapshot.data["remarks"];
     this.id = snapshot.documentID;
-    this.product = snapshot.data["product"];
+    this.product = "${snapshot.data["product"]}";
     this.productId = snapshot.data["productId"];
     this.category = snapshot.data["category"];
-    this.categoryId = snapshot.data["categoryId"];
+    this.categoryId = "${snapshot.data["categoryId"]}";
     this.orderId = snapshot.data["orderId"];
     this.employee = snapshot.data["employee"];
     this.employeeId = snapshot.data["employeeId"];
