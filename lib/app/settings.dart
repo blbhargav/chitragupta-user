@@ -11,13 +11,10 @@ class Settings extends StatefulWidget {
   Settings(Repository repository): repository = repository ?? Repository();
   Repository repository;
   @override
-  _settingsState createState() => _settingsState(repository);
+  _settingsState createState() => _settingsState();
 }
 class _settingsState extends State<Settings>{
-  Repository repository;
   var version='1.0.0';
-
-  _settingsState(Repository repository): repository = repository ?? Repository();
   @override
   void initState() {
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
@@ -54,7 +51,7 @@ class _settingsState extends State<Settings>{
             onTap: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Profile(repository)),
+                MaterialPageRoute(builder: (context) => Profile(widget.repository)),
               );
             },
           ),
@@ -63,7 +60,7 @@ class _settingsState extends State<Settings>{
             onTap: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChangePassword(repository)),
+                MaterialPageRoute(builder: (context) => ChangePassword(widget.repository)),
               );
             },
             child: Container(
@@ -135,12 +132,12 @@ class _settingsState extends State<Settings>{
   }
 
   Future _logout() async {
-    await repository.signOut();
-    await repository.updateUserSignedLocally(false,"");
+    await widget.repository.signOut();
+    await widget.repository.updateUserSignedLocally(false,"");
 
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => SplashScreen()),
+        MaterialPageRoute(builder: (context) => SplashScreen(repository: widget.repository,)),
         ModalRoute.withName("/Splash"));
   }
 
