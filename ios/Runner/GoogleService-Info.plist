@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>123766642071-5hpvc5e6vt0osho4842kr6fm5akhsv9a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.123766642071-5hpvc5e6vt0osho4842kr6fm5akhsv9a</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>123766642071-eo7gjfiaocnd5ner9sr9hlnfpg6l6q1d.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB60WLKy68xabaOw2Qg_t5E-P2myZv76qM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>123766642071</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.blb.chitragupta</string>
+	<key>PROJECT_ID</key>
+	<string>chitragupta-v22</string>
+	<key>STORAGE_BUCKET</key>
+	<string>chitragupta-v22.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:123766642071:ios:238bf4c03f9e5f78ca20d2</string>
+	<key>DATABASE_URL</key>
+	<string>https://chitragupta-v22.firebaseio.com</string>
+</dict>
+</plist>
